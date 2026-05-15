@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/settings"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SettingsActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/tbSettings"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:title="@string/settings"
+        app:titleTextAppearance="@style/Toolbar.TitleText"
+        app:navigationIcon="@drawable/baseline_arrow_back_24"/>
+
+    <FrameLayout
+        style="@style/FrameLayoutStyle">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="@string/dark_theme"
+            android:textSize="@dimen/textSizeMedium"
+            android:textColor="@color/black"/>
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"/>
+    </FrameLayout>
+
+    <FrameLayout
+        style="@style/FrameLayoutStyle">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="@string/share_application"
+            android:textSize="@dimen/textSizeMedium"
+            android:textColor="@color/black"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/baseline_share_24"
+            android:layout_gravity="end"/>
+    </FrameLayout>
+
+    <FrameLayout
+        style="@style/FrameLayoutStyle">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="@string/get_support"
+            android:textSize="@dimen/textSizeMedium"
+            android:textColor="@color/black"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/baseline_support_agent_24"
+            android:layout_gravity="end"/>
+    </FrameLayout>
+
+    <FrameLayout
+        style="@style/FrameLayoutStyle">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="@string/user_agreement"
+            android:textSize="@dimen/textSizeMedium"
+            android:textColor="@color/black"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/baseline_keyboard_arrow_right_24"
+            android:layout_gravity="end"/>
+    </FrameLayout>
+</LinearLayout>

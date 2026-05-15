@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="textSizeLage">22sp</dimen>
+    <dimen name="textSizeMedium">16sp</dimen>
+    <dimen name="marginAlign">16dp</dimen>
+</resources>
