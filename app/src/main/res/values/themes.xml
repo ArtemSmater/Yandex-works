@@ -1,35 +1,20 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- Base application theme. -->
     <style name="Base.Theme.PlaylistMaker" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
+        <!-- Primary brand color. -->
         <item name="colorPrimary">@color/light_blue</item>
+        <item name="colorPrimaryVariant">@color/grey</item>
+        <item name="colorOnPrimary">@color/black</item>
+
+        <item name="colorSecondary">@color/grey_secondary</item>
+        <item name="colorSecondaryVariant">?attr/colorPrimaryVariant</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">?attr/colorPrimary</item>
     </style>
 
-    <style name="Theme.PlaylistMaker" parent="Base.Theme.PlaylistMaker" />
-
-    <style name="Toolbar.TitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
-        <item name="android:textSize">22sp</item>
-    </style>
-
-    <style name="MainButtonStyle">
-        <item name="android:layout_marginVertical">4dp</item>
-        <item name="android:layout_weight">1</item>
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">0dp</item>
-        <item name="android:textSize">@dimen/textSizeLage</item>
-        <item name="android:textColor">@color/black</item>
-        <item name="android:backgroundTint">@color/white</item>
-        <item name="android:foreground">?attr/selectableItemBackground</item>
-        <item name="android:textAllCaps">false</item>
-        <item name="iconGravity">textStart</item>
-        <item name="iconTint">@color/black</item>
-        <item name="cornerRadius">@dimen/marginAlign</item>
-    </style>
-
-    <style name="FrameLayoutStyle">
-        <item name="android:layout_height">61dp</item>
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:paddingHorizontal">@dimen/marginAlign</item>
-        <item name="android:paddingVertical">@dimen/marginAlign</item>
+    <style name="Base.Secondary" parent="Base.Theme.PlaylistMaker">
+        <item name="colorPrimary">@color/white</item>
+        <item name="android:statusBarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 </resources>

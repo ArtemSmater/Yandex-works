@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/light_blue"
+    android:background="?attr/colorPrimary"
     tools:context=".MainActivity">
 
 
@@ -15,14 +15,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:title="@string/app_name"
-        app:titleTextAppearance="@style/Toolbar.TitleText"
+        app:titleTextAppearance="@style/YSMediumFont"
         app:titleTextColor="@color/white"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_margin="@dimen/marginAlign"
+        android:layout_margin="@dimen/marginAlignMedium"
         android:orientation="vertical">
 
         <Button
