@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/search"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="?attr/colorPrimary"
+    tools:context=".SearchActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/tbSearch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:navigationIcon="@drawable/baseline_arrow_back_24"
+        app:title="@string/search"
+        app:titleTextColor="?attr/colorOnPrimary"
+        app:titleTextAppearance="@style/YSMediumFont" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="@dimen/marginAlignSmall"
+        android:layout_marginHorizontal="@dimen/marginAlignMedium"
+        android:background="@drawable/edit_search_background"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/etSearch"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="7"
+            android:autofillHints="postalAddress"
+            android:background="@android:color/transparent"
+            android:inputType="textNoSuggestions"
+            android:paddingVertical="10dp"
+            android:paddingHorizontal="12dp"
+            android:textCursorDrawable="@drawable/blue_cursor"
+            android:drawablePadding="@dimen/marginAlignSmall"
+            android:drawableStart="@drawable/baseline_search_24_edit"
+            android:textAppearance="@style/YSRegularFont"
+            android:hint="@string/search"
+            android:maxLines="1"
+            android:textColor="@color/black"
+            android:textColorHint="?attr/colorSecondaryVariant"/>
+
+        <ImageView
+            android:id="@+id/ivClear"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical"
+            android:contentDescription="@string/app_name"
+            app:srcCompat="@drawable/baseline_clear_24" />
+    </LinearLayout>
+
+
+</LinearLayout>

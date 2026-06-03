@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="search">Поиск</string>
+    <string name="media">Медиатека</string>
+    <string name="settings">Настройки</string>
+    <string name="dark_theme">Темная тема</string>
+    <string name="share_application">Поделиться приложением</string>
+    <string name="get_support">Написать в поддержку</string>
+    <string name="user_agreement">Пользовательское соглашение</string>
+    <string name="share_with">Поделиться через:</string>
+    <string name="letter_topic">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
+    <string name="letter_text">Спасибо разработчикам и разработчицам за крутое приложение!</string>
+    <string name="email_client">Выберите почтовый клиент</string>
+</resources>
