@@ -21,8 +21,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="@dimen/marginAlignSmall"
-        android:layout_marginHorizontal="@dimen/marginAlignMedium"
+        android:layout_marginVertical="@dimen/marginAlignMedium"
+        android:layout_marginHorizontal="@dimen/marginAlignLarge"
         android:background="@drawable/edit_search_background"
         android:orientation="horizontal">
 
@@ -37,7 +37,7 @@
             android:paddingVertical="10dp"
             android:paddingHorizontal="12dp"
             android:textCursorDrawable="@drawable/blue_cursor"
-            android:drawablePadding="@dimen/marginAlignSmall"
+            android:drawablePadding="@dimen/marginAlignMedium"
             android:drawableStart="@drawable/baseline_search_24_edit"
             android:textAppearance="@style/YSRegularFont"
             android:hint="@string/search"

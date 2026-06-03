@@ -6,6 +6,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingBottom="@dimen/marginAlignXLarge"
     android:background="?attr/colorPrimary"
     tools:context=".MainActivity">
 
@@ -14,16 +15,11 @@
         android:id="@+id/tbMain"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/marginAlignMedium"
         app:title="@string/app_name"
         app:titleTextAppearance="@style/YSMediumFont"
         app:titleTextColor="@color/white"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_margin="@dimen/marginAlignMedium"
-        android:orientation="vertical">
 
         <Button
             android:id="@+id/btnSearch"
@@ -42,5 +38,4 @@
             style="@style/MainButtonStyle"
             app:icon="@drawable/baseline_settings_24"
             android:text="@string/settings"/>
-    </LinearLayout>
 </LinearLayout>

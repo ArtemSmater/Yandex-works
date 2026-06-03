@@ -18,54 +18,28 @@
         app:titleTextColor="?attr/colorOnPrimary"
         app:titleTextAppearance="@style/YSMediumFont" />
 
-    <FrameLayout style="@style/FrameLayoutStyle">
 
-        <TextView
-            style="@style/SettingsItemsText"
-            android:text="@string/dark_theme" />
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/switchTheme"
+        style="@style/SettingsItemsText"
+        android:layout_marginTop="@dimen/marginAlignMedium"
+        android:text="@string/dark_theme" />
 
-        <androidx.appcompat.widget.SwitchCompat
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end" />
-    </FrameLayout>
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tvShare"
+        style="@style/SettingsItemsText"
+        android:drawableEnd="@drawable/baseline_share_24"
+        android:text="@string/share_application" />
 
-    <FrameLayout style="@style/FrameLayoutStyle">
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tvSupport"
+        style="@style/SettingsItemsText"
+        android:drawableEnd="@drawable/baseline_support_agent_24"
+        android:text="@string/get_support" />
 
-        <TextView
-            style="@style/SettingsItemsText"
-            android:text="@string/share_application" />
-
-        <ImageView
-            android:id="@+id/shareIcon"
-            style="@style/SettingsItemsIcons"
-            android:src="@drawable/baseline_share_24"
-            android:contentDescription="@string/app_name"/>
-    </FrameLayout>
-
-    <FrameLayout style="@style/FrameLayoutStyle">
-
-        <TextView
-            style="@style/SettingsItemsText"
-            android:text="@string/get_support" />
-
-        <ImageView
-            android:id="@+id/supportIcon"
-            style="@style/SettingsItemsIcons"
-            android:src="@drawable/baseline_support_agent_24"
-            android:contentDescription="@string/app_name"/>
-    </FrameLayout>
-
-    <FrameLayout style="@style/FrameLayoutStyle">
-
-        <TextView
-            style="@style/SettingsItemsText"
-            android:text="@string/user_agreement" />
-
-        <ImageView
-            android:id="@+id/agreementIcon"
-            style="@style/SettingsItemsIcons"
-            android:src="@drawable/baseline_keyboard_arrow_right_24"
-            android:contentDescription="@string/app_name"/>
-    </FrameLayout>
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tvAgreement"
+        style="@style/SettingsItemsText"
+        android:drawableEnd="@drawable/baseline_keyboard_arrow_right_24"
+        android:text="@string/user_agreement" />
 </LinearLayout>

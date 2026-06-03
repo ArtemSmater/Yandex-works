@@ -1,17 +1,13 @@
 package com.example.playlistmaker
-
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 
 class SearchActivity : AppCompatActivity() {
 
@@ -34,12 +30,6 @@ class SearchActivity : AppCompatActivity() {
         if (savedInstanceState != null) {
             searchValue = savedInstanceState.getString(resources.getString(R.string.save_state_key), DEF_LINE)
             searchCursor = savedInstanceState.getInt(resources.getString(R.string.save_cursor_key), DEF_CURSOR)
-        }
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.search)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
         }
     }
 
@@ -73,12 +63,7 @@ class SearchActivity : AppCompatActivity() {
             }
         }
         toolbar.setNavigationOnClickListener {
-            startActivity(
-                Intent(
-                    this,
-                    MainActivity::class.java
-                )
-            )
+            finish()
         }
 
         etSearch.addTextChangedListener(object : TextWatcher {
@@ -102,17 +87,9 @@ class SearchActivity : AppCompatActivity() {
                 count: Int
             ) {
                 searchValue = s.toString().trim()
-                hideClearButton()
+                ivClear.isVisible = !s.isNullOrEmpty()
             }
         })
-    }
-
-    fun hideClearButton() {
-        if (etSearch.text.trim().isEmpty()) {
-            ivClear.visibility = View.GONE
-        } else {
-            ivClear.visibility = View.VISIBLE
-        }
     }
 
     fun setText(line: String, selection: Int) {
