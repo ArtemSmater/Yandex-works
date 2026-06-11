@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="?attr/colorPrimary"
-    tools:context=".SearchActivity">
+    tools:context=".screens.SearchActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/tbSearch"
@@ -42,7 +42,7 @@
             android:textAppearance="@style/YSRegularFont"
             android:hint="@string/search"
             android:maxLines="1"
-            android:textColor="@color/black"
+            android:textColor="@color/black_light"
             android:textColorHint="?attr/colorSecondaryVariant"/>
 
         <ImageView
@@ -54,6 +54,12 @@
             android:contentDescription="@string/app_name"
             app:srcCompat="@drawable/baseline_clear_24" />
     </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvTracks"
+        android:layout_marginTop="@dimen/marginAlignLarge"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 
 </LinearLayout>

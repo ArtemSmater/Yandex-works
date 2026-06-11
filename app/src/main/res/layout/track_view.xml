@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:paddingVertical="@dimen/marginAlignMedium"
+    android:paddingHorizontal="13dp">
+
+    <ImageView
+        android:id="@+id/ivTrackIcon"
+        android:layout_width="@dimen/posterSizeSmall"
+        android:layout_height="@dimen/posterSizeSmall"
+        android:contentDescription="@string/app_name"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/baseline_music_note_24" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/marginAlignMedium"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/ivTrackDetails"
+        app:layout_constraintStart_toEndOf="@+id/ivTrackIcon"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+        <TextView
+            android:id="@+id/tvTrackName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAppearance="@style/YSRegularFont"
+            android:textColor="?attr/colorOnSecondary"
+            tools:text="TextView" />
+
+        <TextView
+            android:id="@+id/tvTrackAuthor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/YSRegularFontSmall"
+            android:textColor="?attr/colorPrimaryVariant"
+            tools:text="TextView" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/ivTrackDetails"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/app_name"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/baseline_keyboard_arrow_right_24" />
+</androidx.constraintlayout.widget.ConstraintLayout>
