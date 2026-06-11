@@ -43,7 +43,7 @@ class TrackAdapter(val tracks: List<Track>) : RecyclerView.Adapter<TrackAdapter.
 
         fun bind(model: Track) {
             tvTrack.text = model.trackName
-            "${model.artistName} • ${model.trackTime}".also { tvAuthor.text = it }
+            "${model.artistName}  •  ${model.trackTime}".also { tvAuthor.text = it }
 
             val multiTransformation = MultiTransformation(
                 CenterCrop(),
@@ -53,7 +53,7 @@ class TrackAdapter(val tracks: List<Track>) : RecyclerView.Adapter<TrackAdapter.
             Glide.with(itemView)
                 .load(model.artworkUrl100)
                 .apply(RequestOptions.bitmapTransform(multiTransformation))
-                .placeholder(R.drawable.baseline_music_note_24)
+                .placeholder(R.drawable.placeholder)
                 .into(ivPoster)
         }
     }
