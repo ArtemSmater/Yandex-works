@@ -1,4 +1,4 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.screens
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -8,6 +8,11 @@ import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.playlistmaker.R
+import com.example.playlistmaker.adapters.TrackAdapter
+import com.example.playlistmaker.source.DataSource
 
 class SearchActivity : AppCompatActivity() {
 
@@ -19,6 +24,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var toolbar: Toolbar
     private lateinit var ivClear: ImageView
     private lateinit var etSearch: EditText
+    private lateinit var rvTracks: RecyclerView
     private var searchValue = DEF_LINE
     private var searchCursor = DEF_CURSOR
 
@@ -45,6 +51,8 @@ class SearchActivity : AppCompatActivity() {
         toolbar = findViewById(R.id.tbSearch)
         ivClear = findViewById(R.id.ivClear)
         etSearch = findViewById(R.id.etSearch)
+        rvTracks = findViewById(R.id.rvTracks)
+        rvTracks.layoutManager = LinearLayoutManager(this)
     }
 
     override fun onResume() {
@@ -54,6 +62,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     fun listeners() {
+        rvTracks.adapter = TrackAdapter(DataSource.tracks)
         ivClear.setOnClickListener { _ ->
             run {
                 setText(DEF_LINE, DEF_CURSOR)

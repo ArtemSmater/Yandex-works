@@ -1,4 +1,4 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.screens
 
 import android.content.Intent
 import android.os.Build
@@ -8,6 +8,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.net.toUri
+import com.example.playlistmaker.R
 
 class SettingsActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.R)

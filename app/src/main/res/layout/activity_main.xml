@@ -8,7 +8,7 @@
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/marginAlignXLarge"
     android:background="?attr/colorPrimary"
-    tools:context=".MainActivity">
+    tools:context=".screens.MainActivity">
 
 
     <androidx.appcompat.widget.Toolbar

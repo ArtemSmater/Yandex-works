@@ -2,6 +2,9 @@
 <resources>
     <dimen name="textSizeLage">22sp</dimen>
     <dimen name="textSizeMedium">16sp</dimen>
+    <dimen name="textSizeSmall">11sp</dimen>
+
+    <dimen name="posterSizeSmall">45dp</dimen>
 
     <dimen name="marginAlignSmall">4dp</dimen>
     <dimen name="marginAlignMedium">8dp</dimen>
