@@ -1,5 +1,6 @@
 package com.example.playlistmaker.adapters
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +17,15 @@ import com.example.playlistmaker.pojo.Track
 import com.example.playlistmaker.utils.Transform
 
 
-class TrackAdapter(val tracks: List<Track>) : RecyclerView.Adapter<TrackAdapter.TrackViewHolder>() {
+class TrackAdapter() : RecyclerView.Adapter<TrackAdapter.TrackViewHolder>() {
+
+    var tracks: List<Track> = listOf()
+        @SuppressLint("NotifyDataSetChanged")
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
+
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -40,10 +49,12 @@ class TrackAdapter(val tracks: List<Track>) : RecyclerView.Adapter<TrackAdapter.
         private val ivPoster = itemView.findViewById<ImageView>(R.id.ivTrackIcon)
         private val tvTrack = itemView.findViewById<TextView>(R.id.tvTrackName)
         private val tvAuthor = itemView.findViewById<TextView>(R.id.tvTrackAuthor)
+        private val tvDuration = itemView.findViewById<TextView>(R.id.tvDuration)
 
         fun bind(model: Track) {
             tvTrack.text = model.trackName
-            "${model.artistName}  •  ${model.trackTime}".also { tvAuthor.text = it }
+            tvAuthor.text = model.artistName
+            tvDuration.text = Transform.millsToMins(model.trackTimeMillis)
 
             val multiTransformation = MultiTransformation(
                 CenterCrop(),

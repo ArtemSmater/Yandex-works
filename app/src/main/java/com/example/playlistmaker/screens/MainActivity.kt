@@ -8,6 +8,7 @@ import android.widget.Button
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.example.playlistmaker.R
+import com.example.playlistmaker.screens.searchscreen.SearchActivity
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
     @RequiresApi(Build.VERSION_CODES.R)
@@ -33,11 +34,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     val listener1: View.OnClickListener = View.OnClickListener { v -> checkButton(v as Button) }
 
     // var 3
-    val listener2: View.OnClickListener = object : View.OnClickListener {
-        override fun onClick(v: View?) {
-            checkButton(v as Button)
-        }
-    }
+    val listener2: View.OnClickListener = View.OnClickListener { v -> checkButton(v as Button) }
 
     fun checkButton(btn: Button) {
         val intent = when (btn.id) {

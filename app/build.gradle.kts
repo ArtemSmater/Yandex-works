@@ -38,9 +38,18 @@ android {
 }
 
 dependencies {
-    implementation ("com.github.bumptech.glide:glide:5.0.7")
-    implementation(libs.androidx.recyclerview)
+
+    implementation("io.reactivex.rxjava2:rxandroid:2.1.1")
+    implementation("io.reactivex.rxjava2:rxjava:2.2.21")
+
+    implementation("com.squareup.retrofit2:retrofit:3.0.0")
+    implementation("com.squareup.retrofit2:adapter-rxjava2:3.0.0")
+    implementation("com.squareup.retrofit2:converter-gson:3.0.0")
+
     annotationProcessor ("com.github.bumptech.glide:compiler:5.0.7")
+    implementation ("com.github.bumptech.glide:glide:5.0.7")
+
+    implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

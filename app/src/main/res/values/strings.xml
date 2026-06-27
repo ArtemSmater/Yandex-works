@@ -2,10 +2,18 @@
     <string name="app_name" translatable="false">Playlist maker</string>
     <string name="yandex_android_link" translatable="false">https://practicum.yandex.ru/android-developer/</string>
     <string name="yandex_agreement_link" translatable="false">https://yandex.ru/legal/practicum_offer/ru/</string>
+
     <string name="save_state_key" translatable="false">SAVED_SEARCH_FIELD</string>
+    <string name="save_query_key" translatable="false">SAVED_QUERY_FIELD</string>
     <string name="save_cursor_key" translatable="false">SAVED_SEARCH_CURSOR</string>
+    <string name="save_list_size" translatable="false">SAVED_LIST_SIZE</string>
+    <string name="save_error_img_key" translatable="false">SAVED_ERROR_IMAGE</string>
+    <string name="save_error_text_key" translatable="false">SAVED_ERROR_TEXT</string>
+    <string name="save_error_button_key" translatable="false">SAVED_ERROR_BUTTON</string>
+
     <string name="intent_text_type" translatable="false">text/plain</string>
     <string name="intent_email_type" translatable="false">mailto:</string>
+
     <string name="search">Search</string>
     <string name="media">Media</string>
     <string name="settings">Settings</string>
@@ -18,5 +26,8 @@
     <string name="letter_topic">Message to android developers!</string>
     <string name="letter_text">Thank to developers!</string>
     <string name="email_client">Choose the email client!</string>
-
+    <string name="empty_list">Nothing to show</string>
+    <string name="internet_error">Invalid connection</string>
+    <string name="download_error">Check internet connection</string>
+    <string name="update">Update</string>
 </resources>
