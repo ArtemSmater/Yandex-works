@@ -17,14 +17,23 @@ import com.example.playlistmaker.pojo.Track
 import com.example.playlistmaker.utils.Transform
 
 
-class TrackAdapter() : RecyclerView.Adapter<TrackAdapter.TrackViewHolder>() {
+class TrackAdapter : RecyclerView.Adapter<TrackAdapter.TrackViewHolder>() {
 
     var tracks: List<Track> = listOf()
         @SuppressLint("NotifyDataSetChanged")
         set(value) {
-            field = value
-            notifyDataSetChanged()
+            if (field != value) {
+                field = value
+                notifyDataSetChanged()
+            }
         }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun clear() {
+        tracks = listOf()
+        notifyDataSetChanged()
+    }
+
 
     override fun onCreateViewHolder(
         parent: ViewGroup,

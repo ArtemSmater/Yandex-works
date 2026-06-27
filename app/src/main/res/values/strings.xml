@@ -30,4 +30,5 @@
     <string name="internet_error">Invalid connection</string>
     <string name="download_error">Check internet connection</string>
     <string name="update">Update</string>
+    <string name="spaces" translatable="false">\n\n</string>
 </resources>

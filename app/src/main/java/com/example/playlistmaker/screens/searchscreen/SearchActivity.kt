@@ -21,13 +21,6 @@ import com.example.playlistmaker.adapters.TrackAdapter
 import com.example.playlistmaker.pojo.Track
 
 class SearchActivity : AppCompatActivity(), TrackSubscriber, ErrorSubscriber {
-
-    companion object {
-        const val DEF_LINE = ""
-        const val DEF_CURSOR = 0
-        const val DEF_VISIBILITY = View.GONE
-    }
-
     private lateinit var toolbar: Toolbar
     private lateinit var ivClear: ImageView
     private lateinit var etSearch: EditText
@@ -139,7 +132,7 @@ class SearchActivity : AppCompatActivity(), TrackSubscriber, ErrorSubscriber {
 
         ivClear.setOnClickListener { _ ->
             run {
-                adapter.tracks = listOf()
+                adapter.clear()
                 setText(DEF_LINE, DEF_CURSOR)
                 val inputMethodManager =
                     getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
@@ -185,6 +178,7 @@ class SearchActivity : AppCompatActivity(), TrackSubscriber, ErrorSubscriber {
 
     override fun showError(message: String) {
         showErrorHints(isEmpty = true, isSuccess = false)
+        adapter.clear()
     }
 
     fun showErrorHints(isEmpty: Boolean, isSuccess: Boolean) {
@@ -211,17 +205,17 @@ class SearchActivity : AppCompatActivity(), TrackSubscriber, ErrorSubscriber {
 
     fun checkViewState() {
         if (ivPlaceholder.isVisible && tvErrorMessage.isVisible && btnToUpdate.isVisible) {
-            ivPlaceholder.setImageDrawable(getDrawable(R.drawable.error_light))
+            ivPlaceholder.setImageDrawable(theme.getDrawable(R.drawable.error_light))
             tvErrorMessage.text = buildString {
                 append(getString(R.string.internet_error))
-                append("\n\n")
+                append(getString(R.string.spaces))
                 append(getString(R.string.download_error))
             }
             return
         }
 
         if (ivPlaceholder.isVisible && tvErrorMessage.isVisible) {
-            ivPlaceholder.setImageDrawable(getDrawable(R.drawable.empty_light))
+            ivPlaceholder.setImageDrawable(theme.getDrawable(R.drawable.empty_light))
             tvErrorMessage.text = getString(R.string.empty_list)
         }
     }
@@ -233,5 +227,10 @@ class SearchActivity : AppCompatActivity(), TrackSubscriber, ErrorSubscriber {
         } else {
             line.length
         }
+    }
+    companion object {
+        const val DEF_LINE = ""
+        const val DEF_CURSOR = 0
+        const val DEF_VISIBILITY = View.GONE
     }
 }
