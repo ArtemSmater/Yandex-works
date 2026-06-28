@@ -11,4 +11,8 @@
     <string name="letter_topic">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
     <string name="letter_text">Спасибо разработчикам и разработчицам за крутое приложение!</string>
     <string name="email_client">Выберите почтовый клиент</string>
+    <string name="download_error">Загрузка не удалась. Проверьте подключение к интернету</string>
+    <string name="update">Обновить</string>
+    <string name="empty_list">Ничего не нашлось</string>
+    <string name="internet_error">Проблемы со связью</string>
 </resources>

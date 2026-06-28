@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="textSizeLage">22sp</dimen>
-    <dimen name="textSizeMedium">16sp</dimen>
     <dimen name="textSizeSmall">11sp</dimen>
+    <dimen name="textSize">14sp</dimen>
+    <dimen name="textSizeMedium">16sp</dimen>
+    <dimen name="textSizeLarge">19sp</dimen>
+    <dimen name="textSizeXLage">22sp</dimen>
 
     <dimen name="posterSizeSmall">45dp</dimen>
+    <dimen name="posterSizeMedium">120dp</dimen>
 
     <dimen name="marginAlignSmall">4dp</dimen>
     <dimen name="marginAlignMedium">8dp</dimen>
     <dimen name="marginAlignLarge">16dp</dimen>
     <dimen name="marginAlignXLarge">20dp</dimen>
+    <dimen name="marginAlignXXLarge">24dp</dimen>
 </resources>

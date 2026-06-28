@@ -16,7 +16,7 @@
             android:name=".screens.MediaActivity"
             android:exported="false" />
         <activity
-            android:name=".screens.SearchActivity"
+            android:name=".screens.searchscreen.SearchActivity"
             android:theme="@style/Base.Secondary"
             android:exported="false" />
         <activity

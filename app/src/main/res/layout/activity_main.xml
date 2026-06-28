@@ -17,7 +17,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/marginAlignMedium"
         app:title="@string/app_name"
-        app:titleTextAppearance="@style/YSMediumFont"
+        app:titleTextAppearance="@style/YSMedium22"
         app:titleTextColor="@color/white"/>
 
 

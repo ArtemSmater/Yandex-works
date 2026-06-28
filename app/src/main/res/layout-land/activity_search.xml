@@ -71,7 +71,7 @@
             android:id="@+id/ivErrorPlaceholder"
             android:layout_width="120dp"
             android:layout_height="120dp"
-            android:layout_marginTop="102dp"
+            android:layout_alignTop="@+id/rvTracks"
             android:layout_centerHorizontal="true"
             app:srcCompat="@drawable/placeholder" />
 
@@ -79,7 +79,6 @@
             android:id="@+id/tvErrorMessage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/marginAlignLarge"
             android:layout_marginHorizontal="@dimen/marginAlignXXLarge"
             android:gravity="center"
             android:layout_below="@+id/ivErrorPlaceholder"
@@ -92,7 +91,6 @@
             android:id="@+id/btnToUpload"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/marginAlignXXLarge"
             android:paddingVertical="10dp"
             android:paddingHorizontal="14dp"
             android:backgroundTint="?attr/colorOnPrimary"

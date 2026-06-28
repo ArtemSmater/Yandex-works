@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingHorizontal="13dp"
@@ -15,22 +16,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/tvTrackName"
-        style="@style/TracksTextStyle"
-        android:textAppearance="@style/YSRegularFont"
-        android:textColor="?attr/colorOnSecondary"
-        app:layout_constraintBottom_toTopOf="@id/guidelineTrack"
-        app:layout_constraintEnd_toStartOf="@id/ivTrackDetails"
-        app:layout_constraintStart_toEndOf="@id/ivTrackIcon" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guidelineTrack"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.5" />
-
     <ImageView
         android:id="@+id/ivTrackDetails"
         android:layout_width="wrap_content"
@@ -41,13 +26,55 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/baseline_keyboard_arrow_right_24" />
 
-    <TextView
-        android:id="@+id/tvTrackAuthor"
-        style="@style/TracksTextStyle"
-        android:textAppearance="@style/YSRegularFontSmall"
-        android:textColor="?attr/colorPrimaryVariant"
-        app:layout_constraintEnd_toStartOf="@+id/ivTrackDetails"
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
         app:layout_constraintStart_toEndOf="@id/ivTrackIcon"
-        app:layout_constraintTop_toBottomOf="@id/guidelineTrack" />
+        app:layout_constraintTop_toTopOf="@id/ivTrackIcon"
+        app:layout_constraintBottom_toBottomOf="@id/ivTrackIcon"
+        app:layout_constraintEnd_toStartOf="@id/ivTrackDetails">
+
+        <TextView
+            android:id="@+id/tvTrackName"
+            style="@style/TracksTextStyle"
+            android:textAppearance="@style/YSRegular16"
+            android:textColor="?attr/colorOnSecondary"
+            tools:text="She loves you"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginHorizontal="@dimen/marginAlignMedium">
+
+            <TextView
+                android:id="@+id/tvTrackAuthor"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                style="@style/TracksTextStyleSmall"
+                android:textAppearance="@style/YSRegular11"
+                android:textColor="?attr/colorPrimaryVariant"
+                tools:text="The Beatles" />
+
+            <ImageView
+                android:id="@+id/ivDelimiter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/app_name"
+                app:srcCompat="@drawable/dot" />
+
+            <TextView
+                android:id="@+id/tvDuration"
+                style="@style/TracksTextStyleSmall"
+                android:textAppearance="@style/YSRegular11"
+                android:textColor="?attr/colorPrimaryVariant"
+                tools:text="3:00" />
+
+        </LinearLayout>
+
+
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
