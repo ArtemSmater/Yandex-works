@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.playlistmaker.R
 import com.example.playlistmaker.screens.searchscreen.SearchActivity
 
+
 class MainActivity : AppCompatActivity(), View.OnClickListener {
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,7 +42,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             R.id.btnSearch -> Intent(this, SearchActivity::class.java)
             R.id.btnMedia -> Intent(this, MediaActivity::class.java)
             R.id.btnSettings -> Intent(this, SettingsActivity::class.java)
-            else -> Intent(this, MediaActivity::class.java)
+            else -> throw RuntimeException(getString(R.string.unknown_button_error))
         }
         startActivity(intent)
     }

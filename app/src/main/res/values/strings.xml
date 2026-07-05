@@ -1,19 +1,24 @@
 <resources>
     <string name="app_name" translatable="false">Playlist maker</string>
+
+    <!--links-->
     <string name="yandex_android_link" translatable="false">https://practicum.yandex.ru/android-developer/</string>
     <string name="yandex_agreement_link" translatable="false">https://yandex.ru/legal/practicum_offer/ru/</string>
 
+    <!--keys-->
     <string name="save_state_key" translatable="false">SAVED_SEARCH_FIELD</string>
     <string name="save_query_key" translatable="false">SAVED_QUERY_FIELD</string>
     <string name="save_cursor_key" translatable="false">SAVED_SEARCH_CURSOR</string>
-    <string name="save_list_size" translatable="false">SAVED_LIST_SIZE</string>
+    <string name="save_list_size_key" translatable="false">SAVED_LIST_SIZE</string>
     <string name="save_error_img_key" translatable="false">SAVED_ERROR_IMAGE</string>
     <string name="save_error_text_key" translatable="false">SAVED_ERROR_TEXT</string>
     <string name="save_error_button_key" translatable="false">SAVED_ERROR_BUTTON</string>
 
+    <!--intent settings-->
     <string name="intent_text_type" translatable="false">text/plain</string>
     <string name="intent_email_type" translatable="false">mailto:</string>
 
+    <!--interface strings-->
     <string name="search">Search</string>
     <string name="media">Media</string>
     <string name="settings">Settings</string>
@@ -30,5 +35,10 @@
     <string name="internet_error">Invalid connection</string>
     <string name="download_error">Check internet connection</string>
     <string name="update">Update</string>
+    <string name="clear_cache">Clear history</string>
+    <string name="last_requests">Last requests</string>
     <string name="spaces" translatable="false">\n\n</string>
+
+    <!--errors-->
+    <string name="unknown_button_error">Unknown button!</string>
 </resources>
