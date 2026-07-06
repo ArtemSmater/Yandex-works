@@ -10,6 +10,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
@@ -57,6 +59,11 @@ class SearchActivity : AppCompatActivity(), TrackSubscriber, CacheSubscriber, Er
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.search)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
         initViews()
         getSavedStates(savedInstanceState)
     }
@@ -99,12 +106,13 @@ class SearchActivity : AppCompatActivity(), TrackSubscriber, CacheSubscriber, Er
         tvCacheTitle = findViewById(R.id.tvCacheTitle)
         btnToClearCache = findViewById(R.id.btnToClearCache)
 
-        // recycler views
-        rvTrackCache = findViewById(R.id.rvTrackCache)
-        rvTrackCache.adapter = cacheAdapter
-
+        // track recycler view
         rvTracks = findViewById(R.id.rvTracks)
         rvTracks.adapter = trackAdapter
+
+        // cache recycler view
+        rvTrackCache = findViewById(R.id.rvTrackCache)
+        rvTrackCache.adapter = cacheAdapter
     }
 
     private fun getSavedStates(savedInstanceState: Bundle?) {
@@ -196,10 +204,13 @@ class SearchActivity : AppCompatActivity(), TrackSubscriber, CacheSubscriber, Er
         etSearch.doOnTextChanged { text, _, _, _ ->
             searchValue = text.toString().trim()
             ivClear.isVisible = !text.isNullOrEmpty()
+            if (text.isNullOrEmpty()) {
+                trackAdapter.submitList(emptyList<Track>())
+            }
             showCacheList(
                 etSearch.hasFocus(),
                 text?.isEmpty() == true,
-                trackAdapter.currentList.isEmpty(),
+                text?.isEmpty() == true,
                 cacheAdapter.currentList.isNotEmpty()
             )
         }
