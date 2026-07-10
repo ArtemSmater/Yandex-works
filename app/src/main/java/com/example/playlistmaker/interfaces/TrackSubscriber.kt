@@ -1,4 +1,4 @@
-package com.example.playlistmaker.screens.searchscreen
+package com.example.playlistmaker.interfaces
 
 import com.example.playlistmaker.pojo.Track
 

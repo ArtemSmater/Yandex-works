@@ -2,6 +2,7 @@ package com.example.playlistmaker.screens.searchscreen
 
 import com.example.playlistmaker.interfaces.ErrorSubscriber
 import com.example.playlistmaker.api.ApiFactory
+import com.example.playlistmaker.interfaces.TrackSubscriber
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers

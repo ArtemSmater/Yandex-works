@@ -15,4 +15,7 @@
     <string name="update">Обновить</string>
     <string name="empty_list">Ничего не нашлось</string>
     <string name="internet_error">Проблемы со связью</string>
+    <string name="unknown_button_error">Неизвестная кнопка!</string>
+    <string name="clear_cache">Очистить историю</string>
+    <string name="last_requests">Вы искали</string>
 </resources>

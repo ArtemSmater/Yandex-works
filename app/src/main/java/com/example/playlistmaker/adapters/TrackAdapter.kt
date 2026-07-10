@@ -1,11 +1,11 @@
 package com.example.playlistmaker.adapters
 
-import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.MultiTransformation
@@ -14,26 +14,12 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.example.playlistmaker.R
 import com.example.playlistmaker.pojo.Track
+import com.example.playlistmaker.utils.TrackDiffCallback
 import com.example.playlistmaker.utils.Transform
 
 
-class TrackAdapter : RecyclerView.Adapter<TrackAdapter.TrackViewHolder>() {
-
-    var tracks: List<Track> = listOf()
-        @SuppressLint("NotifyDataSetChanged")
-        set(value) {
-            if (field != value) {
-                field = value
-                notifyDataSetChanged()
-            }
-        }
-
-    @SuppressLint("NotifyDataSetChanged")
-    fun clear() {
-        tracks = listOf()
-        notifyDataSetChanged()
-    }
-
+class TrackAdapter : ListAdapter<Track, TrackAdapter.TrackViewHolder>(TrackDiffCallback()) {
+    var onTrackClickListener: ((Track) -> Unit)? = null
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -47,11 +33,11 @@ class TrackAdapter : RecyclerView.Adapter<TrackAdapter.TrackViewHolder>() {
         holder: TrackViewHolder,
         position: Int
     ) {
-        holder.bind(tracks[position])
-    }
-
-    override fun getItemCount(): Int {
-        return tracks.size
+        val item = getItem(position)
+        holder.bind(item)
+        holder.itemView.setOnClickListener {
+            onTrackClickListener?.invoke(item)
+        }
     }
 
     class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

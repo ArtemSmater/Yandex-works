@@ -9,6 +9,9 @@
         <item name="colorSecondary">@color/grey_secondary</item>
         <item name="colorSecondaryVariant">?attr/colorPrimaryVariant</item>
         <item name="colorOnSecondary">@color/black</item>
+
+        <item name="thumbTint">?attr/colorPrimaryVariant</item>
+        <item name="trackTint">?attr/colorSecondary</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimary</item>
     </style>

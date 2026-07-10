@@ -1,64 +1,82 @@
 package com.example.playlistmaker.screens
 
-import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.net.toUri
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import com.example.playlistmaker.App
 import com.example.playlistmaker.R
+import com.example.playlistmaker.utils.IntentFactory
+import com.example.playlistmaker.utils.PrefsUtil
+import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsActivity : AppCompatActivity() {
+
+    private lateinit var toolbar: Toolbar
+    private lateinit var switchTheme: SwitchMaterial
+    private lateinit var tvShare: TextView
+    private lateinit var tvSupport: TextView
+    private lateinit var tvAgreement: TextView
+    private lateinit var sharedPreferences: SharedPreferences
+
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.settings)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+        initViews()
+        setDefaultCondition()
     }
 
-    override fun onStart() {
+    override fun onResume() {
+        super.onResume()
         listeners()
-        super.onStart()
+    }
+
+    private fun setDefaultCondition() {
+        val isChecked = sharedPreferences.getBoolean(PrefsUtil.SHARED_KEY_THEME, false)
+        if (isChecked) {
+            switchTheme.isChecked = true
+        }
+    }
+
+    private fun initViews() {
+        toolbar = findViewById(R.id.tbSettings)
+        switchTheme = findViewById(R.id.switchTheme)
+        tvShare = findViewById(R.id.tvShare)
+        tvSupport = findViewById(R.id.tvSupport)
+        tvAgreement = findViewById(R.id.tvAgreement)
+        sharedPreferences = getSharedPreferences(PrefsUtil.SHARED_PREFERENCE_NAME, MODE_PRIVATE)
     }
 
     fun listeners() {
-        val toolbar = findViewById<Toolbar>(R.id.tbSettings)
         toolbar.setNavigationOnClickListener {
             finish()
         }
 
-        val tvShare = findViewById<TextView>(R.id.tvShare)
-        tvShare.setOnClickListener { _ ->
-            run {
-                val intent = Intent().apply {
-                    action = Intent.ACTION_SEND
-                    putExtra(Intent.EXTRA_TEXT, resources.getString(R.string.yandex_android_link))
-                    type = resources.getString(R.string.intent_text_type)
-                }
-                startActivity(Intent.createChooser(intent, resources.getString(R.string.share_with)))
-            }
+        switchTheme.setOnCheckedChangeListener { _, checked ->
+            (applicationContext as App).switchTheme(checked)
         }
 
-        val tvSupport = findViewById<TextView>(R.id.tvSupport)
-        tvSupport.setOnClickListener { _ ->
-            run {
-                val intent = Intent(Intent.ACTION_SENDTO).apply {
-                    data = resources.getString(R.string.intent_email_type).toUri()
-                    putExtra(Intent.EXTRA_EMAIL, arrayOf(resources.getString(R.string.yandex_android_link)))
-                    putExtra(Intent.EXTRA_SUBJECT, resources.getString(R.string.letter_topic))
-                    putExtra(Intent.EXTRA_TEXT, resources.getString(R.string.letter_text))
-                }
-                startActivity(intent)
-            }
+        tvShare.setOnClickListener {
+            startActivity(IntentFactory.getShareIntent(this))
         }
 
-        val tvAgreement = findViewById<TextView>(R.id.tvAgreement)
-        tvAgreement.setOnClickListener { _ ->
-            run {
-                val intent = Intent(Intent.ACTION_VIEW, resources.getString(R.string.yandex_agreement_link).toUri())
-                startActivity(intent)
-            }
+        tvSupport.setOnClickListener {
+            startActivity(IntentFactory.getSupportIntent(this))
+        }
+
+        tvAgreement.setOnClickListener {
+            startActivity(IntentFactory.getAgreementIntent(this))
         }
     }
 }
