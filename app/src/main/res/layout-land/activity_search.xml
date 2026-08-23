@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/search"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorPrimary"
+    android:orientation="vertical"
+    tools:context=".screens.searchscreen.SearchActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/tbSearch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:navigationIcon="@drawable/baseline_arrow_back_24"
+        app:title="@string/search"
+        app:titleTextAppearance="@style/YSMedium22"
+        app:titleTextColor="?attr/colorOnPrimary" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/marginAlignLarge"
+        android:layout_marginVertical="@dimen/marginAlignMedium"
+        android:background="@drawable/edit_search_background"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/etSearch"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="7"
+            android:autofillHints="postalAddress"
+            android:background="@android:color/transparent"
+            android:drawableStart="@drawable/baseline_search_24_edit"
+            android:drawablePadding="@dimen/marginAlignMedium"
+            android:hint="@string/search"
+            android:imeOptions="actionDone"
+            android:inputType="textNoSuggestions"
+            android:maxLines="1"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="10dp"
+            android:singleLine="true"
+            android:textAppearance="@style/YSRegular16"
+            android:textColor="@color/black_light"
+            android:textColorHint="?attr/colorSecondaryVariant"
+            android:textCursorDrawable="@drawable/blue_cursor" />
+
+        <ImageView
+            android:id="@+id/ivClear"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:contentDescription="@string/app_name"
+            app:srcCompat="@drawable/baseline_clear_24" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvTracks"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/marginAlignLarge"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+        <LinearLayout
+            android:id="@+id/llCacheContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/marginAlignMedium"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvCacheTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/textSizeLarge"
+                android:gravity="center"
+                android:paddingTop="@dimen/marginAlignMedium"
+                android:paddingBottom="@dimen/marginAlignMedium"
+                android:text="@string/last_requests"
+                android:textAppearance="@style/YSMedium19Bold"
+                android:textColor="?attr/colorOnPrimary"
+                android:visibility="gone" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvTrackCache"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_marginTop="@dimen/marginAlignMedium"
+                android:visibility="gone"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnToClearCache"
+                style="@style/ErrorButtonStyle"
+                android:text="@string/clear_cache"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llErrorContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/marginAlignMedium"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentTop="true"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/ivErrorPlaceholder"
+                android:layout_width="120dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:contentDescription="@string/app_name"
+                android:visibility="gone"
+                app:srcCompat="@drawable/placeholder" />
+
+            <TextView
+                android:id="@+id/tvErrorMessage"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_marginHorizontal="@dimen/marginAlignXXLarge"
+                android:layout_marginTop="@dimen/marginAlignMedium"
+                android:gravity="center"
+                android:textAppearance="@style/YSMedium19"
+                android:textColor="?attr/colorOnPrimary"
+                android:visibility="gone"
+                tools:text="TextView" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnToUpload"
+                style="@style/ErrorButtonStyle"
+                android:text="@string/update" />
+        </LinearLayout>
+    </RelativeLayout>
+</LinearLayout>
