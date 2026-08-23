@@ -3,6 +3,7 @@ package com.example.playlistmaker.presentation.utils
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.view.isVisible
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.MultiTransformation
@@ -42,11 +43,7 @@ fun bindCollectionName(textView: TextView, text: String?) {
 
 @BindingAdapter("textVisibility")
 fun setVisibility(textView: TextView, text: String?) {
-    if (text == null) {
-        textView.visibility = View.GONE
-    } else {
-        textView.visibility = View.VISIBLE
-    }
+    textView.isVisible = text != null
 }
 
 @BindingAdapter("trackYear")

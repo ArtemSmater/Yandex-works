@@ -1,4 +1,4 @@
-package com.example.playlistmaker.presentation.adapters
+package com.example.playlistmaker.presentation.ui.search
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -14,7 +14,6 @@ import com.example.playlistmaker.databinding.TrackViewBinding
 import com.example.playlistmaker.domain.entities.Track
 import com.example.playlistmaker.presentation.utils.TrackDiffCallback
 import com.example.playlistmaker.presentation.utils.Transform
-
 
 class TrackAdapter : ListAdapter<Track, TrackAdapter.TrackViewHolder>(TrackDiffCallback()) {
     var onTrackClickListener: ((Track) -> Unit)? = null

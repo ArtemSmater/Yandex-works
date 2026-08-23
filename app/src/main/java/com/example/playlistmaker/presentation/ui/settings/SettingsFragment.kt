@@ -1,4 +1,4 @@
-package com.example.playlistmaker.presentation.fragments
+package com.example.playlistmaker.presentation.ui.settings
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -17,8 +17,6 @@ import com.example.playlistmaker.databinding.SettingsFragmentBinding
 import com.example.playlistmaker.presentation.utils.IntentFactory
 import com.example.playlistmaker.presentation.utils.configureSystemBars
 import com.example.playlistmaker.presentation.utils.isNightMode
-import com.example.playlistmaker.presentation.viewmodel.settingsviewmodel.SettingsViewModel
-import com.example.playlistmaker.presentation.viewmodel.settingsviewmodel.SettingsViewModelFactory
 
 class SettingsFragment : Fragment() {
 
@@ -57,6 +55,11 @@ class SettingsFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         checkTheme()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun observers() {

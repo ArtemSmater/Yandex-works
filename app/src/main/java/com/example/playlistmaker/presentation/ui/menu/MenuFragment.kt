@@ -1,4 +1,4 @@
-package com.example.playlistmaker.presentation.fragments
+package com.example.playlistmaker.presentation.ui.menu
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -41,6 +41,11 @@ class MenuFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         configureSystemBars(lightStatusBarIcons = false, lightNavigationBarIcons = false)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun listeners() {
