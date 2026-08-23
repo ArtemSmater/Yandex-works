@@ -2,7 +2,6 @@
 <resources>
     <dimen name="textSizeSmall">11sp</dimen>
     <dimen name="textSize">14sp</dimen>
-    <dimen name="textSize1">13sp</dimen>
     <dimen name="textSizeMedium">16sp</dimen>
     <dimen name="textSizeLarge">19sp</dimen>
     <dimen name="textSizeXLage">22sp</dimen>
@@ -15,6 +14,4 @@
     <dimen name="marginAlignLarge">16dp</dimen>
     <dimen name="marginAlignXLarge">20dp</dimen>
     <dimen name="marginAlignXXLarge">24dp</dimen>
-    <dimen name="marginAlignXLLarge">26dp</dimen>
-    <dimen name="marginAlignXXXLarge">28dp</dimen>
 </resources>
