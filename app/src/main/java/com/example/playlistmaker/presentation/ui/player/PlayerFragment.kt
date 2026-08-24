@@ -72,6 +72,11 @@ class PlayerFragment : Fragment() {
         _binding = null
     }
 
+    override fun onPause() {
+        super.onPause()
+        viewModel.uiAction(PlayerUiAction.Pause)
+    }
+
     override fun onStop() {
         super.onStop()
         effectDisposable?.dispose()

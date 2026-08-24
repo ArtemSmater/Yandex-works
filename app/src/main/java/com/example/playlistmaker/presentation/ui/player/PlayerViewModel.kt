@@ -49,6 +49,16 @@ class PlayerViewModel(val track: Track) : ViewModel() {
             is PlayerUiAction.Back -> {
                 backPressed()
             }
+
+            is PlayerUiAction.Pause -> {
+                checkPlaying()
+            }
+        }
+    }
+
+    private fun checkPlaying() {
+        if (playerState == STATE_PLAYING) {
+            pause()
         }
     }
 
