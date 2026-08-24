@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/colorPrimary"
+        android:orientation="vertical"
+        android:theme="@style/Base.Secondary"
+        tools:context=".presentation.fragments.SearchFragment">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/tbSearch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:navigationIcon="@drawable/baseline_arrow_back_24"
+            app:title="@string/search"
+            app:titleTextAppearance="@style/YSMedium22_500"
+            app:titleTextColor="?attr/colorOnPrimary" />
+
+        <LinearLayout
+            android:id="@+id/llSearchContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/marginAlignLarge"
+            android:layout_marginVertical="@dimen/marginAlignMedium"
+            android:background="@drawable/edit_search_background"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tbSearch">
+
+            <EditText
+                android:id="@+id/etSearch"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="7"
+                android:autofillHints="postalAddress"
+                android:background="@android:color/transparent"
+                android:drawableStart="@drawable/baseline_search_24_edit"
+                android:drawablePadding="@dimen/marginAlignMedium"
+                android:hint="@string/search"
+                android:imeOptions="actionDone"
+                android:inputType="textNoSuggestions"
+                android:maxLines="1"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="10dp"
+                android:singleLine="true"
+                android:textAppearance="@style/YSRegular16"
+                android:textColor="@color/black_light"
+                android:textColorHint="?attr/colorSecondaryVariant"
+                android:textCursorDrawable="@drawable/blue_cursor" />
+
+            <ImageView
+                android:id="@+id/ivClear"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:contentDescription="@string/app_name"
+                android:visibility="gone"
+                app:srcCompat="@drawable/baseline_clear_24" />
+        </LinearLayout>
+
+        <!--web tracks-->
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvTracks"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="@dimen/marginAlignLarge"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/llSearchContainer" />
+
+        <!--cache views-->
+
+        <TextView
+            android:id="@+id/tvCacheTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/textSizeLarge"
+            android:layout_marginTop="@dimen/marginAlignXXLarge"
+            android:gravity="center"
+            android:paddingTop="18dp"
+            android:paddingBottom="12dp"
+            android:text="@string/last_requests"
+            android:textAppearance="@style/YSMedium19Bold"
+            android:textColor="?attr/colorOnPrimary"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/llSearchContainer" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvTracksCache"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="@dimen/marginAlignMedium"
+            android:visibility="gone"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toTopOf="@id/btnToClearCache"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvCacheTitle" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnToClearCache"
+            style="@style/ErrorButtonStyle"
+            android:text="@string/clear_cache"
+            app:layout_constraintBottom_toBottomOf="@+id/rvTracks"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/rvTracksCache" />
+
+        <!--error views-->
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/glSearch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/llSearchContainer"
+            app:layout_constraintGuide_begin="210dp"/>
+
+        <ImageView
+            android:id="@+id/ivErrorPlaceholder"
+            android:layout_width="@dimen/posterSizeMedium"
+            android:layout_height="@dimen/posterSizeMedium"
+            android:contentDescription="@string/app_name"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/glSearch"
+            app:layout_constraintBottom_toTopOf="@id/tvErrorMessage"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintVertical_chainStyle="packed"
+            app:srcCompat="@drawable/placeholder" />
+
+        <TextView
+            android:id="@+id/tvErrorMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/marginAlignXXLarge"
+            android:layout_marginTop="@dimen/marginAlignLarge"
+            android:gravity="center"
+            android:textAppearance="@style/YSMedium19"
+            android:textColor="?attr/colorOnPrimary"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ivErrorPlaceholder"
+            app:layout_constraintBottom_toTopOf="@id/btnToUpload"
+            tools:text="TextView" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnToUpload"
+            style="@style/ErrorButtonStyle"
+            android:text="@string/update"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvErrorMessage" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

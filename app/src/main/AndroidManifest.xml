@@ -14,18 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/Base.Theme.PlaylistMaker">
         <activity
-            android:name=".screens.MediaActivity"
-            android:exported="false" />
-        <activity
-            android:name=".screens.searchscreen.SearchActivity"
-            android:theme="@style/Base.Secondary"
-            android:exported="false" />
-        <activity
-            android:name=".screens.SettingsActivity"
-            android:theme="@style/Base.Secondary"
-            android:exported="false" />
-        <activity
-            android:name=".screens.MainActivity"
+            android:name=".presentation.activities.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

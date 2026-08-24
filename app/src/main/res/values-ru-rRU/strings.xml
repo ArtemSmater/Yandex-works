@@ -18,4 +18,9 @@
     <string name="unknown_button_error">Неизвестная кнопка!</string>
     <string name="clear_cache">Очистить историю</string>
     <string name="last_requests">Вы искали</string>
+    <string name="duration">Длительность</string>
+    <string name="album">Альбом</string>
+    <string name="year">Год</string>
+    <string name="genre">Жанр</string>
+    <string name="country">Страна</string>
 </resources>
