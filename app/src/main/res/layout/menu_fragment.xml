@@ -8,7 +8,7 @@
         android:layout_height="match_parent"
         android:paddingBottom="@dimen/marginAlignXLarge"
         android:background="?attr/colorPrimary"
-        tools:context=".presentation.fragments.MenuFragment">
+        tools:context=".presentation.ui.menu.MenuFragment">
 
 
         <androidx.appcompat.widget.Toolbar
