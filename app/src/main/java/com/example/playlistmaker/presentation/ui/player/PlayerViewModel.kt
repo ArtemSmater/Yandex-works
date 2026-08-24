@@ -43,7 +43,7 @@ class PlayerViewModel(val track: Track) : ViewModel() {
             }
 
             is PlayerUiAction.Release -> {
-                mediaPlayer.release()
+                turnOffPlayer()
             }
 
             is PlayerUiAction.Back -> {
@@ -54,6 +54,10 @@ class PlayerViewModel(val track: Track) : ViewModel() {
                 checkPlaying()
             }
         }
+    }
+
+    private fun turnOffPlayer() {
+        mediaPlayer.release()
     }
 
     private fun checkPlaying() {
