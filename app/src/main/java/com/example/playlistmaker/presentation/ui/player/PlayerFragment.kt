@@ -67,24 +67,15 @@ class PlayerFragment : Fragment() {
         observers()
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
     override fun onPause() {
         super.onPause()
+        effectDisposable?.dispose()
         viewModel.uiAction(PlayerUiAction.Pause)
     }
 
-    override fun onStop() {
-        super.onStop()
-        effectDisposable?.dispose()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        viewModel.uiAction(PlayerUiAction.Release)
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun observables() {
@@ -116,7 +107,7 @@ class PlayerFragment : Fragment() {
             }
 
             is PlayerUiState.Prepared -> {
-                preparedScreen(state.progress)
+                preparedScreen()
             }
 
             is PlayerUiState.Playing -> {
@@ -133,12 +124,8 @@ class PlayerFragment : Fragment() {
         binding.ibStartSong.isEnabled = false
     }
 
-    private fun preparedScreen(progress: String) {
-        with(binding) {
-            ibStartSong.isEnabled = true
-            ibStartSong.setImageDrawable(getPlayDrawable(false))
-            tvSongDuration.text = progress
-        }
+    private fun preparedScreen() {
+        getActionScreen(requireActivity().getString(R.string.time_example), false)
     }
 
     private fun playingScreen(progress: String) {

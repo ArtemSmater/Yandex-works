@@ -42,10 +42,6 @@ class PlayerViewModel(val track: Track) : ViewModel() {
                 playbackControl()
             }
 
-            is PlayerUiAction.Release -> {
-                turnOffPlayer()
-            }
-
             is PlayerUiAction.Back -> {
                 backPressed()
             }
@@ -54,10 +50,6 @@ class PlayerViewModel(val track: Track) : ViewModel() {
                 checkPlaying()
             }
         }
-    }
-
-    private fun turnOffPlayer() {
-        mediaPlayer.release()
     }
 
     private fun checkPlaying() {
@@ -73,7 +65,6 @@ class PlayerViewModel(val track: Track) : ViewModel() {
     }
 
     private fun startProgressChecking() {
-        progressDisposable?.dispose()
         progressDisposable = Observable
             .interval(300, java.util.concurrent.TimeUnit.MILLISECONDS)
             .observeOn(AndroidSchedulers.mainThread())
@@ -82,7 +73,6 @@ class PlayerViewModel(val track: Track) : ViewModel() {
 
     private fun stopProgressChecking() {
         progressDisposable?.dispose()
-        progressDisposable = null
     }
 
     private fun playbackControl() {
@@ -113,17 +103,13 @@ class PlayerViewModel(val track: Track) : ViewModel() {
     private fun setListeners() {
         mediaPlayer.setOnPreparedListener {
             playerState = STATE_PREPARED
-            _playerViewModelState.value = PlayerUiState.Prepared(
-                Transform.millsToMins(mediaPlayer.duration.toLong())
-            )
+            _playerViewModelState.value = PlayerUiState.Prepared
         }
 
         mediaPlayer.setOnCompletionListener {
             playerState = STATE_PREPARED
             stopProgressChecking()
-            _playerViewModelState.value = PlayerUiState.Prepared(
-                Transform.millsToMins(mediaPlayer.duration.toLong())
-            )
+            _playerViewModelState.value = PlayerUiState.Prepared
         }
     }
 
@@ -132,7 +118,7 @@ class PlayerViewModel(val track: Track) : ViewModel() {
     }
 
     private fun getPlayerProgress(): String {
-        val progress = mediaPlayer.duration - mediaPlayer.currentPosition
+        val progress = mediaPlayer.currentPosition
         return Transform.millsToMins(progress.toLong())
     }
 
@@ -140,6 +126,8 @@ class PlayerViewModel(val track: Track) : ViewModel() {
     override fun onCleared() {
         super.onCleared()
         stopProgressChecking()
+        mediaPlayer.release()
+        progressDisposable = null
     }
 
     companion object {

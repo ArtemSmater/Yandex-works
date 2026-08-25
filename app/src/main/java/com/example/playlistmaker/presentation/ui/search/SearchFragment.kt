@@ -94,14 +94,10 @@ class SearchFragment : Fragment() {
         observers()
     }
 
-    override fun onStop() {
-        super.onStop()
-        effectsDisposable?.dispose()
-        effectsDisposable = null
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
+        effectsDisposable?.dispose()
+        effectsDisposable = null
         _binding = null
     }
 
