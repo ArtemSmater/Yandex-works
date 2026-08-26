@@ -1,8 +1,8 @@
 package com.example.playlistmaker.presentation.ui.player
 
-sealed class PlayerUiAction {
+sealed interface PlayerUiAction {
 
-    object Play : PlayerUiAction()
-    object Pause : PlayerUiAction()
-    object Back : PlayerUiAction()
+    data object Play : PlayerUiAction
+    data object Pause : PlayerUiAction
+    data object Back : PlayerUiAction
 }

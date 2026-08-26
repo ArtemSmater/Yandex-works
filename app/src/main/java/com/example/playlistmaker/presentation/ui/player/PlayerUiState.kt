@@ -1,9 +1,9 @@
 package com.example.playlistmaker.presentation.ui.player
 
-sealed class PlayerUiState {
+sealed interface PlayerUiState {
 
-    object Initial : PlayerUiState()
-    object Prepared : PlayerUiState()
-    class Playing(val progress: String) : PlayerUiState()
-    class Paused(val progress: String) : PlayerUiState()
+    data object Initial : PlayerUiState
+    data object Prepared : PlayerUiState
+    data class Playing(val progress: String) : PlayerUiState
+    data class Paused(val progress: String) : PlayerUiState
 }

@@ -63,8 +63,8 @@ class PlayerFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        observables()
-        observers()
+        observeActions()
+        observeChanges()
     }
 
     override fun onPause() {
@@ -78,7 +78,7 @@ class PlayerFragment : Fragment() {
         _binding = null
     }
 
-    private fun observables() {
+    private fun observeActions() {
         with(binding) {
             tbPlayer.setNavigationOnClickListener {
                 viewModel.uiAction(PlayerUiAction.Back)
@@ -90,7 +90,7 @@ class PlayerFragment : Fragment() {
         }
     }
 
-    private fun observers() {
+    private fun observeChanges() {
         viewModel.playerViewModelState.observe(viewLifecycleOwner) {
             checkScreenState(it)
         }
