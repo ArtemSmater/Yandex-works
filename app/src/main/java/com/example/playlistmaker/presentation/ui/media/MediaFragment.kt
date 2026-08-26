@@ -1,4 +1,4 @@
-package com.example.playlistmaker.presentation.fragments
+package com.example.playlistmaker.presentation.ui.media
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -20,5 +20,10 @@ class MediaFragment : Fragment() {
     ): View {
         _binding = MediaFragmentBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

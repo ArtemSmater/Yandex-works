@@ -9,7 +9,7 @@
         android:background="?attr/colorPrimary"
         android:orientation="vertical"
         android:theme="@style/Base.Secondary"
-        tools:context=".presentation.fragments.SearchFragment">
+        tools:context=".presentation.ui.search.SearchFragment">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/tbSearch"

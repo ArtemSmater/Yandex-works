@@ -9,7 +9,7 @@
         android:background="?attr/colorPrimary"
         android:orientation="vertical"
         android:theme="@style/Base.Secondary"
-        tools:context=".presentation.fragments.SearchFragment">
+        tools:context=".presentation.ui.search.SearchFragment">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/tbSearch"
@@ -63,7 +63,6 @@
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
                 android:contentDescription="@string/app_name"
-                android:visibility="gone"
                 app:srcCompat="@drawable/baseline_clear_24" />
         </LinearLayout>
 
@@ -156,7 +155,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/ivErrorPlaceholder"
-            app:layout_constraintBottom_toTopOf="@id/btnToUpload"
+            app:layout_constraintBottom_toTopOf="@+id/btnToUpload"
             tools:text="TextView" />
 
         <com.google.android.material.button.MaterialButton
@@ -166,5 +165,16 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvErrorMessage" />
+
+        <ProgressBar
+            android:id="@+id/pbSearch"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_marginTop="140dp"
+            android:indeterminateTint="@color/light_blue"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/llSearchContainer"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

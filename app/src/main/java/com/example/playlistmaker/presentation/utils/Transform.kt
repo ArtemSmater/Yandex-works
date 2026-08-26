@@ -17,7 +17,7 @@ class Transform {
         }
 
         fun millsToMins(mills: Long): String {
-            return SimpleDateFormat("mm:ss", Locale.getDefault()).format(mills)
+            return SimpleDateFormat("m:ss", Locale.getDefault()).format(mills)
         }
 
         fun editList(item: Track, list: MutableList<Track>): List<Track> {
