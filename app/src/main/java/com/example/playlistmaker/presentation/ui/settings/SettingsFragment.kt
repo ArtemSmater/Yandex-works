@@ -11,22 +11,28 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.example.playlistmaker.App
-import com.example.playlistmaker.data.localcache.CacheRepositoryProvider
 import com.example.playlistmaker.databinding.SettingsFragmentBinding
+import com.example.playlistmaker.di.Creator
+import com.example.playlistmaker.presentation.utils.FragmentTheme
 import com.example.playlistmaker.presentation.utils.IntentFactory
-import com.example.playlistmaker.presentation.utils.configureSystemBars
-import com.example.playlistmaker.presentation.utils.isNightMode
+import com.example.playlistmaker.presentation.utils.checkTheme
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
 
 class SettingsFragment : Fragment() {
 
     private val viewModelFactory by lazy {
-        SettingsViewModelFactory(CacheRepositoryProvider.provideCacheRepository(requireActivity()))
+        SettingsViewModelFactory(
+            Creator.provideThemeUseCase(requireActivity().application),
+            requireActivity().application
+        )
     }
 
     private val viewModel by lazy {
         ViewModelProvider(this, viewModelFactory)[SettingsViewModel::class.java]
     }
+
+    private lateinit var disposable: Disposable
 
     private var _binding: SettingsFragmentBinding? = null
     private val binding: SettingsFragmentBinding
@@ -48,57 +54,88 @@ class SettingsFragment : Fragment() {
             v.updatePadding(top = bars.top, bottom = bars.bottom)
             insets
         }
-        observers()
-        listeners()
+        checkTheme(FragmentTheme(lightSB = false, darkSB = true, lightNB = false, darkNB = true))
     }
 
     override fun onResume() {
         super.onResume()
-        checkTheme()
+        observeEffects()
+        observeActions()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        disposable.dispose()
         _binding = null
     }
 
-    private fun observers() {
-        viewModel.setTheme()
+    private fun observeEffects() {
         viewModel.themeViewModel.observe(viewLifecycleOwner, Observer {
             binding.switchTheme.isChecked = it
         })
+
+        disposable = viewModel.settingsViewModelEffects
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { checkEffects(it) }
     }
 
-    private fun listeners() {
+    private fun checkEffects(effect: SettingsUiEffects) {
+        when (effect) {
+            is SettingsUiEffects.BackPressed -> {
+                doBackAction()
+            }
+
+            is SettingsUiEffects.IntentShare -> {
+                doShareIntent()
+            }
+
+            is SettingsUiEffects.IntentAgreement -> {
+                doAgreementAction()
+            }
+
+            is SettingsUiEffects.IntentSupport -> {
+                doSupportAction()
+            }
+        }
+    }
+
+    private fun observeActions() {
         with(binding) {
             switchTheme.setOnCheckedChangeListener { _, checked ->
-                viewModel.updateTheme(checked)
-                (requireActivity().application as App).switchTheme(checked)
+                viewModel.uiAction(SettingsUiActions.UpdateTheme(checked))
             }
 
             tbSettings.setNavigationOnClickListener {
-                findNavController().popBackStack()
+                viewModel.uiAction(SettingsUiActions.BackPressed)
             }
 
             tvShare.setOnClickListener {
-                startActivity(IntentFactory.getShareIntent(requireActivity()))
+                viewModel.uiAction(SettingsUiActions.ShareAction)
             }
 
             tvSupport.setOnClickListener {
-                startActivity(IntentFactory.getSupportIntent(requireActivity()))
+                viewModel.uiAction(SettingsUiActions.SupportAction)
             }
 
             tvAgreement.setOnClickListener {
-                startActivity(IntentFactory.getAgreementIntent(requireActivity()))
+                viewModel.uiAction(SettingsUiActions.CheckAgreementAction)
             }
         }
     }
 
-    private fun checkTheme() {
-        if (isNightMode()) {
-            configureSystemBars(lightStatusBarIcons = false, lightNavigationBarIcons = false)
-        } else {
-            configureSystemBars(lightStatusBarIcons = true, lightNavigationBarIcons = true)
-        }
+    private fun doBackAction() {
+        findNavController().popBackStack()
+    }
+
+    private fun doShareIntent() {
+        startActivity(IntentFactory.getShareIntent(requireActivity()))
+    }
+
+    private fun doSupportAction() {
+        startActivity(IntentFactory.getSupportIntent(requireActivity()))
+    }
+
+    private fun doAgreementAction() {
+        startActivity(IntentFactory.getAgreementIntent(requireActivity()))
     }
 }

@@ -2,24 +2,27 @@ package com.example.playlistmaker
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
-import com.example.playlistmaker.data.localcache.CacheRepositoryProvider
-import com.example.playlistmaker.domain.repository.CacheRepository
+import com.example.playlistmaker.di.Creator
 
 class App : Application() {
 
     private var theme = false
-    private lateinit var cacheRepository: CacheRepository
+    private val getThemeUseCase by lazy {
+        Creator.provideThemeUseCase(this)
+    }
+    private val updateThemeUseCase by lazy {
+        Creator.provideUpdateThemeUseCase(this)
+    }
 
     override fun onCreate() {
         super.onCreate()
-        cacheRepository = CacheRepositoryProvider.provideCacheRepository(this)
-        val savedValue = cacheRepository.getThemeValue()
+        val savedValue = getThemeUseCase()
         switchTheme(savedValue)
     }
 
     fun switchTheme(darkThemeEnabled: Boolean) {
         theme = darkThemeEnabled
-        cacheRepository.setThemeValue(theme)
+        updateThemeUseCase(theme)
         AppCompatDelegate.setDefaultNightMode(
             if (darkThemeEnabled) {
                 AppCompatDelegate.MODE_NIGHT_YES

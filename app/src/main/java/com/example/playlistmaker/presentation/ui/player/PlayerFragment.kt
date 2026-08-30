@@ -14,8 +14,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.PlayerFragmentBinding
-import com.example.playlistmaker.presentation.utils.configureSystemBars
-import com.example.playlistmaker.presentation.utils.isNightMode
+import com.example.playlistmaker.presentation.utils.FragmentTheme
+import com.example.playlistmaker.presentation.utils.checkTheme
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 
@@ -58,7 +58,7 @@ class PlayerFragment : Fragment() {
         }
         binding.track = PlayerFragmentArgs.fromBundle(requireArguments()).Track
         binding.lifecycleOwner = viewLifecycleOwner
-        checkTheme()
+        checkTheme(FragmentTheme(lightSB = false, darkSB = true, lightNB = false, darkNB = true))
     }
 
     override fun onResume() {
@@ -151,13 +151,5 @@ class PlayerFragment : Fragment() {
             R.drawable.play_button
         }
         return AppCompatResources.getDrawable(requireActivity(), drawableId)
-    }
-
-    private fun checkTheme() {
-        if (isNightMode()) {
-            configureSystemBars(lightStatusBarIcons = false, lightNavigationBarIcons = false)
-        } else {
-            configureSystemBars(lightStatusBarIcons = true, lightNavigationBarIcons = true)
-        }
     }
 }

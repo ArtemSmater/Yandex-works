@@ -35,11 +35,11 @@ class MenuFragment : Fragment() {
             v.updatePadding(top = bars.top, bottom = bars.bottom)
             insets
         }
-        listeners()
     }
 
     override fun onResume() {
         super.onResume()
+        listeners()
         configureSystemBars(lightStatusBarIcons = false, lightNavigationBarIcons = false)
     }
 

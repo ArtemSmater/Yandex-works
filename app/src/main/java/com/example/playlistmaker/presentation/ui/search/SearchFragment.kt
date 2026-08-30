@@ -6,8 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
@@ -16,16 +14,15 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import androidx.transition.TransitionManager
 import com.example.playlistmaker.R
-import com.example.playlistmaker.data.localcache.CacheRepositoryProvider
-import com.example.playlistmaker.data.network.WebRepositoryProvider
 import com.example.playlistmaker.databinding.SearchFragmentBinding
+import com.example.playlistmaker.di.Creator
 import com.example.playlistmaker.domain.entities.Track
+import com.example.playlistmaker.presentation.utils.FragmentTheme
 import com.example.playlistmaker.presentation.utils.Transform
-import com.example.playlistmaker.presentation.utils.configureSystemBars
+import com.example.playlistmaker.presentation.utils.checkTheme
 import com.example.playlistmaker.presentation.utils.hideKeyboard
-import com.example.playlistmaker.presentation.utils.isNightMode
+import com.example.playlistmaker.presentation.utils.moveGuideline
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import kotlin.math.max
@@ -44,8 +41,9 @@ class SearchFragment : Fragment() {
     // view models for screen info
     private val viewModelFactory by lazy {
         SearchViewModelFactory(
-            CacheRepositoryProvider.provideCacheRepository(requireActivity().application),
-            WebRepositoryProvider.provideWebRepository()
+            Creator.provideTrackListUseCase(requireActivity().application),
+            Creator.provideCacheListUseCase(requireActivity().application),
+            Creator.provideUpdateCacheUseCase(requireActivity().application)
         )
     }
 
@@ -74,24 +72,22 @@ class SearchFragment : Fragment() {
         ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
             val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             val imeHeight = insets.getInsets(WindowInsetsCompat.Type.ime())
-            moveGuideline(
-                max(
-                    Transform.dpToPx(bars.bottom.toFloat(), requireActivity()),
-                    Transform.dpToPx(210f, requireActivity()) - imeHeight.bottom
-                ),
-                v
+            val maxValue = max(
+                Transform.dpToPx(bars.bottom.toFloat(), requireActivity()),
+                Transform.dpToPx(210f, requireActivity()) - imeHeight.bottom
             )
+            moveGuideline(maxValue, v)
             v.updatePadding(top = bars.top, bottom = max(bars.bottom, imeHeight.bottom))
             insets
         }
         setAdapters()
-        checkTheme()
+        checkTheme(FragmentTheme(lightSB = false, darkSB = true, lightNB = false, darkNB = true))
     }
 
     override fun onResume() {
         super.onResume()
-        observables()
-        observers()
+        observeActions()
+        observeChanges()
     }
 
     override fun onDestroyView() {
@@ -101,7 +97,7 @@ class SearchFragment : Fragment() {
         _binding = null
     }
 
-    private fun observers() {
+    private fun observeChanges() {
         viewModel.searchViewModelState.observe(viewLifecycleOwner) {
             checkScreenState(it)
         }
@@ -111,7 +107,7 @@ class SearchFragment : Fragment() {
             .subscribe { checkScreenEffect(it) }
     }
 
-    private fun observables() {
+    private fun observeActions() {
         with(binding) {
             ivClear.isVisible = etSearch.text.isNotEmpty()
             etSearch.doOnTextChanged { text, _, _, _ ->
@@ -298,24 +294,5 @@ class SearchFragment : Fragment() {
     private fun setAdapters() {
         binding.rvTracks.adapter = trackAdapter
         binding.rvTracksCache.adapter = cacheAdapter
-    }
-
-    private fun moveGuideline(offset: Int, view: View) {
-        val constraintSet = ConstraintSet()
-        constraintSet.clone(view as ConstraintLayout)
-        constraintSet.setGuidelineBegin(
-            R.id.glSearch,
-            offset
-        )
-        TransitionManager.beginDelayedTransition(view)
-        constraintSet.applyTo(view)
-    }
-
-    private fun checkTheme() {
-        if (isNightMode()) {
-            configureSystemBars(lightStatusBarIcons = false, lightNavigationBarIcons = false)
-        } else {
-            configureSystemBars(lightStatusBarIcons = true, lightNavigationBarIcons = true)
-        }
     }
 }
