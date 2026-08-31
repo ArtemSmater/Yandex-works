@@ -7,22 +7,17 @@ import com.example.playlistmaker.di.Creator
 class App : Application() {
 
     private var theme = false
-    private val getThemeUseCase by lazy {
-        Creator.provideThemeUseCase(this)
-    }
-    private val updateThemeUseCase by lazy {
-        Creator.provideUpdateThemeUseCase(this)
-    }
 
     override fun onCreate() {
         super.onCreate()
-        val savedValue = getThemeUseCase()
+        Creator.init(this)
+        val savedValue = Creator.getThemeUseCase()
         switchTheme(savedValue)
     }
 
     fun switchTheme(darkThemeEnabled: Boolean) {
         theme = darkThemeEnabled
-        updateThemeUseCase(theme)
+        Creator.getUpdateThemeUseCase(theme)
         AppCompatDelegate.setDefaultNightMode(
             if (darkThemeEnabled) {
                 AppCompatDelegate.MODE_NIGHT_YES

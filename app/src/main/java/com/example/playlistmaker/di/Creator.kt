@@ -1,6 +1,6 @@
 package com.example.playlistmaker.di
 
-import android.content.Context
+import android.app.Application
 import com.example.playlistmaker.data.localcache.PreferenceStorage
 import com.example.playlistmaker.data.network.ApiFactory
 import com.example.playlistmaker.data.network.ApiService
@@ -16,6 +16,7 @@ import com.example.playlistmaker.domain.usecases.UpdateThemeUseCase
 
 object Creator {
 
+    private lateinit var application: Application
     private var localStorage: PreferenceStorage? = null
     private val LOCK = Any()
 
@@ -23,7 +24,7 @@ object Creator {
         return ApiFactory.apiService
     }
 
-    private fun getStorageService(context: Context): PreferenceStorage {
+    private fun getStorageService(application: Application): PreferenceStorage {
         localStorage?.let {
             return it
         }
@@ -32,38 +33,43 @@ object Creator {
                 return it
             }
 
-            val storage = PreferenceStorage(context)
+            val storage = PreferenceStorage(application)
             localStorage = storage
             return storage
         }
     }
 
-    private fun getTrackRepository(context: Context): TrackRepository {
-        return TrackRepositoryImpl(getStorageService(context), getNetworkService())
+    private val trackRepository: TrackRepository by lazy {
+        TrackRepositoryImpl(getStorageService(application), getNetworkService())
     }
 
-    private fun getThemeRepository(context: Context): ThemeRepository {
-        return ThemeRepositoryImpl(getStorageService(context))
+    private val themeRepository: ThemeRepository by lazy {
+        ThemeRepositoryImpl(getStorageService(application))
+    }
+
+    // init function
+    fun init(application: Application) {
+        this.application = application
     }
 
     // get use cases
-    fun provideCacheListUseCase(context: Context): GetCacheListUseCase {
-        return GetCacheListUseCase(getTrackRepository(context))
+    val getCacheListUseCase: GetCacheListUseCase by lazy {
+        GetCacheListUseCase(trackRepository)
     }
 
-    fun provideTrackListUseCase(context: Context): GetTrackListUseCase {
-        return GetTrackListUseCase(getTrackRepository(context))
+    val getTrackListUseCase: GetTrackListUseCase by lazy {
+        GetTrackListUseCase(trackRepository)
     }
 
-    fun provideThemeUseCase(context: Context): GetThemeUseCase {
-        return GetThemeUseCase(getThemeRepository(context))
+    val getThemeUseCase: GetThemeUseCase by lazy {
+        GetThemeUseCase(themeRepository)
     }
 
-    fun provideUpdateCacheUseCase(context: Context): UpdateCacheUseCase {
-        return UpdateCacheUseCase(getTrackRepository(context))
+    val getUpdateCacheUseCase: UpdateCacheUseCase by lazy {
+        UpdateCacheUseCase(trackRepository)
     }
 
-    fun provideUpdateThemeUseCase(context: Context): UpdateThemeUseCase {
-        return UpdateThemeUseCase(getThemeRepository(context))
+    val getUpdateThemeUseCase: UpdateThemeUseCase by lazy {
+        UpdateThemeUseCase(themeRepository)
     }
 }

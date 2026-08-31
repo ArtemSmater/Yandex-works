@@ -28,7 +28,7 @@ class PlayerFragment : Fragment() {
 
     private lateinit var viewModel: PlayerViewModel
 
-    private var effectDisposable: Disposable? = null
+    private var disposable: Disposable? = null
 
     private var _binding: PlayerFragmentBinding? = null
     private val binding: PlayerFragmentBinding
@@ -59,22 +59,19 @@ class PlayerFragment : Fragment() {
         binding.track = PlayerFragmentArgs.fromBundle(requireArguments()).Track
         binding.lifecycleOwner = viewLifecycleOwner
         checkTheme(FragmentTheme(lightSB = false, darkSB = true, lightNB = false, darkNB = true))
-    }
-
-    override fun onResume() {
-        super.onResume()
         observeActions()
         observeChanges()
     }
 
     override fun onPause() {
         super.onPause()
-        effectDisposable?.dispose()
         viewModel.uiAction(PlayerUiAction.Pause)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        disposable?.dispose()
+        disposable = null
         _binding = null
     }
 
@@ -95,7 +92,7 @@ class PlayerFragment : Fragment() {
             checkScreenState(it)
         }
 
-        effectDisposable = viewModel.playerViewModelEffect
+        disposable = viewModel.playerViewModelEffect
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { findNavController().popBackStack() }
     }

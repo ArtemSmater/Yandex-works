@@ -1,9 +1,9 @@
 package com.example.playlistmaker.presentation.ui.settings
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.example.playlistmaker.App
 import com.example.playlistmaker.domain.usecases.GetThemeUseCase
 import io.reactivex.Observable
@@ -12,7 +12,7 @@ import io.reactivex.subjects.PublishSubject
 class SettingsViewModel(
     private val getThemeUseCase: GetThemeUseCase,
     private val application: Application
-) : AndroidViewModel(application) {
+) : ViewModel() {
 
     private val _themeViewModel = MutableLiveData<Boolean>()
     val themeViewModel: LiveData<Boolean>

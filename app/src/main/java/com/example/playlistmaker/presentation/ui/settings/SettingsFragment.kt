@@ -23,7 +23,7 @@ class SettingsFragment : Fragment() {
 
     private val viewModelFactory by lazy {
         SettingsViewModelFactory(
-            Creator.provideThemeUseCase(requireActivity().application),
+            Creator.getThemeUseCase,
             requireActivity().application
         )
     }
@@ -31,8 +31,7 @@ class SettingsFragment : Fragment() {
     private val viewModel by lazy {
         ViewModelProvider(this, viewModelFactory)[SettingsViewModel::class.java]
     }
-
-    private lateinit var disposable: Disposable
+    private var disposable: Disposable? = null
 
     private var _binding: SettingsFragmentBinding? = null
     private val binding: SettingsFragmentBinding
@@ -55,17 +54,14 @@ class SettingsFragment : Fragment() {
             insets
         }
         checkTheme(FragmentTheme(lightSB = false, darkSB = true, lightNB = false, darkNB = true))
-    }
-
-    override fun onResume() {
-        super.onResume()
         observeEffects()
         observeActions()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        disposable.dispose()
+        disposable?.dispose()
+        disposable = null
         _binding = null
     }
 

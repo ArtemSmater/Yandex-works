@@ -41,9 +41,9 @@ class SearchFragment : Fragment() {
     // view models for screen info
     private val viewModelFactory by lazy {
         SearchViewModelFactory(
-            Creator.provideTrackListUseCase(requireActivity().application),
-            Creator.provideCacheListUseCase(requireActivity().application),
-            Creator.provideUpdateCacheUseCase(requireActivity().application)
+            Creator.getTrackListUseCase,
+            Creator.getCacheListUseCase,
+            Creator.getUpdateCacheUseCase
         )
     }
 
@@ -51,7 +51,7 @@ class SearchFragment : Fragment() {
         ViewModelProvider(this, viewModelFactory)[SearchViewModel::class.java]
     }
 
-    private var effectsDisposable: Disposable? = null
+    private var disposable: Disposable? = null
 
     // view binding
     private var _binding: SearchFragmentBinding? = null
@@ -82,18 +82,14 @@ class SearchFragment : Fragment() {
         }
         setAdapters()
         checkTheme(FragmentTheme(lightSB = false, darkSB = true, lightNB = false, darkNB = true))
-    }
-
-    override fun onResume() {
-        super.onResume()
         observeActions()
         observeChanges()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        effectsDisposable?.dispose()
-        effectsDisposable = null
+        disposable?.dispose()
+        disposable = null
         _binding = null
     }
 
@@ -102,7 +98,7 @@ class SearchFragment : Fragment() {
             checkScreenState(it)
         }
 
-        effectsDisposable = viewModel.searchViewModelEffect
+        disposable = viewModel.searchViewModelEffect
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { checkScreenEffect(it) }
     }
