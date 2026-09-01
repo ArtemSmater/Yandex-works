@@ -1,9 +1,9 @@
-package com.example.playlistmaker.data.mappers
+package com.example.playlistmaker.data.mapper
 
 import com.example.playlistmaker.data.dto.TrackDto
 import com.example.playlistmaker.domain.entities.Track
 
-class Mappers {
+class TrackMapper {
     fun mapDtoToEntity(track: TrackDto): Track {
         return Track(
             track.trackId,
@@ -36,5 +36,9 @@ class Mappers {
 
     fun mapEntityListToDtoList(list: List<Track>) = list.map {
         mapEntityToDto(it)
+    }
+
+    fun mapDtoListToEntityList(list: List<TrackDto>?) = list?.map {
+        mapDtoToEntity(it)
     }
 }

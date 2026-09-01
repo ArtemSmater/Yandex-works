@@ -42,8 +42,9 @@ class SearchFragment : Fragment() {
     private val viewModelFactory by lazy {
         SearchViewModelFactory(
             Creator.getTrackListUseCase,
-            Creator.getCacheListUseCase,
-            Creator.getUpdateCacheUseCase
+            Creator.getHistoryListUseCase,
+            Creator.addTrackToSearchHistoryUseCase,
+            Creator.clearHistoryUseCase
         )
     }
 
@@ -120,7 +121,7 @@ class SearchFragment : Fragment() {
             }
 
             btnToClearCache.setOnClickListener {
-                viewModel.uiAction(SearchUiAction.ClearCache)
+                viewModel.uiAction(SearchUiAction.ClearHistory)
             }
 
             btnToUpload.setOnClickListener {
@@ -173,7 +174,7 @@ class SearchFragment : Fragment() {
                 showTracksScreen(state.tracks)
             }
 
-            is SearchUiState.CacheTracks -> {
+            is SearchUiState.HistoryTracks -> {
                 showCacheScreen(state.tracks)
             }
 

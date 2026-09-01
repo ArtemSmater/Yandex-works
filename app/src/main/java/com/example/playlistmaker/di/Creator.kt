@@ -2,16 +2,21 @@ package com.example.playlistmaker.di
 
 import android.app.Application
 import com.example.playlistmaker.data.localcache.PreferenceStorage
+import com.example.playlistmaker.data.localcache.SearchHistoryStorage
+import com.example.playlistmaker.data.localcache.ThemeValueStorage
 import com.example.playlistmaker.data.network.ApiFactory
 import com.example.playlistmaker.data.network.ApiService
+import com.example.playlistmaker.data.repositories.HistoryRepositoryImpl
 import com.example.playlistmaker.data.repositories.ThemeRepositoryImpl
 import com.example.playlistmaker.data.repositories.TrackRepositoryImpl
+import com.example.playlistmaker.domain.repository.HistoryRepository
 import com.example.playlistmaker.domain.repository.ThemeRepository
 import com.example.playlistmaker.domain.repository.TrackRepository
-import com.example.playlistmaker.domain.usecases.GetCacheListUseCase
+import com.example.playlistmaker.domain.usecases.AddTrackToSearchHistoryUseCase
+import com.example.playlistmaker.domain.usecases.ClearHistoryUseCase
+import com.example.playlistmaker.domain.usecases.GetHistoryListUseCase
 import com.example.playlistmaker.domain.usecases.GetThemeUseCase
 import com.example.playlistmaker.domain.usecases.GetTrackListUseCase
-import com.example.playlistmaker.domain.usecases.UpdateCacheUseCase
 import com.example.playlistmaker.domain.usecases.UpdateThemeUseCase
 
 object Creator {
@@ -39,12 +44,26 @@ object Creator {
         }
     }
 
+    // local storages
+    private val themeValueStorage: ThemeValueStorage by lazy {
+        ThemeValueStorage(getStorageService(application))
+    }
+
+    private val searchHistoryStorage: SearchHistoryStorage by lazy {
+        SearchHistoryStorage(getStorageService(application))
+    }
+
+    // realizations of repositories
+    private val searchHistoryRepository: HistoryRepository by lazy {
+        HistoryRepositoryImpl(searchHistoryStorage)
+    }
+
     private val trackRepository: TrackRepository by lazy {
-        TrackRepositoryImpl(getStorageService(application), getNetworkService())
+        TrackRepositoryImpl(getNetworkService())
     }
 
     private val themeRepository: ThemeRepository by lazy {
-        ThemeRepositoryImpl(getStorageService(application))
+        ThemeRepositoryImpl(themeValueStorage)
     }
 
     // init function
@@ -53,8 +72,8 @@ object Creator {
     }
 
     // get use cases
-    val getCacheListUseCase: GetCacheListUseCase by lazy {
-        GetCacheListUseCase(trackRepository)
+    val getHistoryListUseCase: GetHistoryListUseCase by lazy {
+        GetHistoryListUseCase(searchHistoryRepository)
     }
 
     val getTrackListUseCase: GetTrackListUseCase by lazy {
@@ -65,11 +84,15 @@ object Creator {
         GetThemeUseCase(themeRepository)
     }
 
-    val getUpdateCacheUseCase: UpdateCacheUseCase by lazy {
-        UpdateCacheUseCase(trackRepository)
+    val addTrackToSearchHistoryUseCase: AddTrackToSearchHistoryUseCase by lazy {
+        AddTrackToSearchHistoryUseCase(searchHistoryRepository)
     }
 
     val getUpdateThemeUseCase: UpdateThemeUseCase by lazy {
         UpdateThemeUseCase(themeRepository)
+    }
+
+    val clearHistoryUseCase: ClearHistoryUseCase by lazy {
+        ClearHistoryUseCase(searchHistoryRepository)
     }
 }

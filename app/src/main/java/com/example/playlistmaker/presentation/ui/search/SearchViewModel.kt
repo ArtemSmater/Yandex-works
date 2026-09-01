@@ -4,10 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.playlistmaker.domain.entities.Track
-import com.example.playlistmaker.domain.usecases.GetCacheListUseCase
+import com.example.playlistmaker.domain.usecases.AddTrackToSearchHistoryUseCase
+import com.example.playlistmaker.domain.usecases.ClearHistoryUseCase
+import com.example.playlistmaker.domain.usecases.GetHistoryListUseCase
 import com.example.playlistmaker.domain.usecases.GetTrackListUseCase
-import com.example.playlistmaker.domain.usecases.UpdateCacheUseCase
-import com.example.playlistmaker.presentation.utils.Transform
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -17,12 +17,12 @@ import java.util.concurrent.TimeUnit
 
 class SearchViewModel(
     private val getTrackListUseCase: GetTrackListUseCase,
-    private val getCacheListUseCase: GetCacheListUseCase,
-    private val updateCacheUseCase: UpdateCacheUseCase
+    private val getHistoryListUseCase: GetHistoryListUseCase,
+    private val addTrackToSearchHistoryUseCase: AddTrackToSearchHistoryUseCase,
+    private val clearHistoryUseCase: ClearHistoryUseCase
 ) : ViewModel() {
 
     private lateinit var lastQuery: String
-    private lateinit var cacheList: MutableList<Track>
     private val compositeDisposable = CompositeDisposable()
 
     // main observable query field
@@ -42,14 +42,13 @@ class SearchViewModel(
 
     init {
         getTrackList()
-        getCacheList()
         getTrackClick()
     }
 
     fun uiAction(action: SearchUiAction) {
         when (action) {
-            is SearchUiAction.ClearCache -> {
-                clearCache()
+            is SearchUiAction.ClearHistory -> {
+                clearTrackHistory()
             }
 
             is SearchUiAction.RetryQuery -> {
@@ -57,7 +56,7 @@ class SearchViewModel(
             }
 
             is SearchUiAction.TrackClicked -> {
-                trackClicked(action.track, action.isCached)
+                trackClicked(action.track)
             }
 
             is SearchUiAction.FieldChanged -> {
@@ -80,20 +79,20 @@ class SearchViewModel(
             return
         }
 
-        if (charSequence.isEmpty() && isFocused && cacheList.isNotEmpty()) {
-            _searchViewModelState.value = SearchUiState.CacheTracks(cacheList)
+        if (charSequence.isEmpty() && isFocused && getHistoryListUseCase().isNotEmpty()) {
+            _searchViewModelState.value = SearchUiState.HistoryTracks(getHistoryListUseCase())
             return
         }
 
-        if (_searchViewModelState.value is SearchUiState.CacheTracks) {
+        if (_searchViewModelState.value is SearchUiState.HistoryTracks) {
             _searchViewModelState.value = SearchUiState.WebTracks(emptyList())
         }
 
         queryValue.onNext(charSequence.toString())
     }
 
-    private fun trackClicked(track: Track, isCached: Boolean) {
-        if (!isCached) changeCacheList(track)
+    private fun trackClicked(track: Track) {
+        addTrackToSearchHistoryUseCase(track)
         trackClick.onNext(track)
     }
 
@@ -111,17 +110,9 @@ class SearchViewModel(
             .let(compositeDisposable::add)
     }
 
-    private fun clearCache() {
-        cacheList.clear()
-        _searchViewModelState.value = SearchUiState.CacheTracks(emptyList())
-    }
-
-    private fun changeCacheList(track: Track) {
-        Transform.editList(track, cacheList)
-    }
-
-    private fun getCacheList() {
-        cacheList = getCacheListUseCase().toMutableList()
+    private fun clearTrackHistory() {
+        clearHistoryUseCase()
+        _searchViewModelState.value = SearchUiState.HistoryTracks(emptyList())
     }
 
     private fun getTrackList() {
@@ -135,9 +126,7 @@ class SearchViewModel(
             .let(compositeDisposable::add)
     }
 
-    private fun createSearchObservable(
-        query: String
-    ): Observable<SearchUiState> {
+    private fun createSearchObservable(query: String): Observable<SearchUiState> {
         return createSearchRequest(query).takeWhile { query.length > 2 }
     }
 
@@ -163,7 +152,6 @@ class SearchViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        updateCacheUseCase(cacheList)
         compositeDisposable.clear()
     }
 }

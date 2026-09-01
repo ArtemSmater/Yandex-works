@@ -5,6 +5,4 @@ import io.reactivex.Single
 
 interface TrackRepository {
     fun getTrackList(query: String): Single<List<Track>>
-    fun getTrackList(): List<Track>
-    fun fillCacheList(tracks: List<Track>)
 }

@@ -2,20 +2,23 @@ package com.example.playlistmaker.presentation.ui.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.playlistmaker.domain.usecases.GetCacheListUseCase
+import com.example.playlistmaker.domain.usecases.AddTrackToSearchHistoryUseCase
+import com.example.playlistmaker.domain.usecases.ClearHistoryUseCase
+import com.example.playlistmaker.domain.usecases.GetHistoryListUseCase
 import com.example.playlistmaker.domain.usecases.GetTrackListUseCase
-import com.example.playlistmaker.domain.usecases.UpdateCacheUseCase
 
 class SearchViewModelFactory(
     private val trackListUseCase: GetTrackListUseCase,
-    private val cacheListUseCase: GetCacheListUseCase,
-    private val updateCacheUseCase: UpdateCacheUseCase
+    private val cacheListUseCase: GetHistoryListUseCase,
+    private val addTrackToSearchHistoryUseCase: AddTrackToSearchHistoryUseCase,
+    private val clearHistoryUseCase: ClearHistoryUseCase
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return SearchViewModel(
             trackListUseCase,
             cacheListUseCase,
-            updateCacheUseCase
+            addTrackToSearchHistoryUseCase,
+            clearHistoryUseCase
         ) as T
     }
 }
