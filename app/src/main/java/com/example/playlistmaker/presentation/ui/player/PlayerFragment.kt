@@ -14,8 +14,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.PlayerFragmentBinding
-import com.example.playlistmaker.presentation.utils.configureSystemBars
-import com.example.playlistmaker.presentation.utils.isNightMode
+import com.example.playlistmaker.presentation.utils.FragmentTheme
+import com.example.playlistmaker.presentation.utils.checkTheme
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 
@@ -28,7 +28,7 @@ class PlayerFragment : Fragment() {
 
     private lateinit var viewModel: PlayerViewModel
 
-    private var effectDisposable: Disposable? = null
+    private var disposable: Disposable? = null
 
     private var _binding: PlayerFragmentBinding? = null
     private val binding: PlayerFragmentBinding
@@ -58,23 +58,20 @@ class PlayerFragment : Fragment() {
         }
         binding.track = PlayerFragmentArgs.fromBundle(requireArguments()).Track
         binding.lifecycleOwner = viewLifecycleOwner
-        checkTheme()
-    }
-
-    override fun onResume() {
-        super.onResume()
+        checkTheme(FragmentTheme(lightSB = false, darkSB = true, lightNB = false, darkNB = true))
         observeActions()
         observeChanges()
     }
 
     override fun onPause() {
         super.onPause()
-        effectDisposable?.dispose()
         viewModel.uiAction(PlayerUiAction.Pause)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        disposable?.dispose()
+        disposable = null
         _binding = null
     }
 
@@ -95,7 +92,7 @@ class PlayerFragment : Fragment() {
             checkScreenState(it)
         }
 
-        effectDisposable = viewModel.playerViewModelEffect
+        disposable = viewModel.playerViewModelEffect
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { findNavController().popBackStack() }
     }
@@ -151,13 +148,5 @@ class PlayerFragment : Fragment() {
             R.drawable.play_button
         }
         return AppCompatResources.getDrawable(requireActivity(), drawableId)
-    }
-
-    private fun checkTheme() {
-        if (isNightMode()) {
-            configureSystemBars(lightStatusBarIcons = false, lightNavigationBarIcons = false)
-        } else {
-            configureSystemBars(lightStatusBarIcons = true, lightNavigationBarIcons = true)
-        }
     }
 }

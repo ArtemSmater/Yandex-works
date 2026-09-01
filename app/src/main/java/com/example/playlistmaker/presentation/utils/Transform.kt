@@ -2,7 +2,6 @@ package com.example.playlistmaker.presentation.utils
 
 import android.content.Context
 import android.util.TypedValue
-import com.example.playlistmaker.domain.entities.Track
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -18,15 +17,6 @@ class Transform {
 
         fun millsToMins(mills: Long): String {
             return SimpleDateFormat("m:ss", Locale.getDefault()).format(mills)
-        }
-
-        fun editList(item: Track, list: MutableList<Track>): List<Track> {
-            with(list) {
-                if (contains(item)) remove(item)
-                add(0, item)
-                if (size > 10) removeAt(lastIndex)
-            }
-            return list
         }
 
         fun getHighQualityLink(baseLink: String): String {

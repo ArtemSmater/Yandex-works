@@ -1,9 +1,8 @@
 package com.example.playlistmaker.domain.usecases
 
-import com.example.playlistmaker.domain.repository.CacheRepository
-
-class UpdateThemeUseCase(private val cacheRepository: CacheRepository) {
+import com.example.playlistmaker.domain.repository.ThemeRepository
+class UpdateThemeUseCase(private val repository: ThemeRepository) {
     operator fun invoke(isNight: Boolean) {
-        cacheRepository.setThemeValue(isNight)
+        repository.setThemeValue(isNight)
     }
 }

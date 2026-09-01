@@ -35,13 +35,10 @@ class MenuFragment : Fragment() {
             v.updatePadding(top = bars.top, bottom = bars.bottom)
             insets
         }
+        configureSystemBars(lightStatusBarIcons = false, lightNavigationBarIcons = false)
         listeners()
     }
 
-    override fun onResume() {
-        super.onResume()
-        configureSystemBars(lightStatusBarIcons = false, lightNavigationBarIcons = false)
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()

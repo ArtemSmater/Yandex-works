@@ -1,6 +1,6 @@
 package com.example.playlistmaker.data.network
 
-import com.example.playlistmaker.domain.entities.TrackRequest
+import com.example.playlistmaker.data.dto.TrackRequest
 import io.reactivex.Single
 import retrofit2.http.GET
 import retrofit2.http.Query
