@@ -1,8 +1,13 @@
 package com.example.playlistmaker.presentation.ui.search
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import android.app.Application
+import android.graphics.drawable.Drawable
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import com.example.playlistmaker.R
 import com.example.playlistmaker.domain.entities.Track
 import com.example.playlistmaker.domain.usecases.AddTrackToSearchHistoryUseCase
 import com.example.playlistmaker.domain.usecases.ClearHistoryUseCase
@@ -12,10 +17,12 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import java.util.concurrent.TimeUnit
 
 class SearchViewModel(
+    private val application: Application,
     private val getTrackListUseCase: GetTrackListUseCase,
     private val getHistoryListUseCase: GetHistoryListUseCase,
     private val addTrackToSearchHistoryUseCase: AddTrackToSearchHistoryUseCase,
@@ -32,9 +39,9 @@ class SearchViewModel(
     private val trackClick = PublishSubject.create<Track>()
 
     // for ui state subscribers
-    private var _searchViewModelState = MutableLiveData<SearchUiState>(SearchUiState.Initial)
-    val searchViewModelState: LiveData<SearchUiState>
-        get() = _searchViewModelState
+    private var _searchViewModelState =
+        BehaviorSubject.createDefault<SearchUiState>(SearchUiState.Initial)
+    val searchViewModelState: Observable<SearchUiState> = _searchViewModelState.hide()
 
     // for effects subscribers
     private var _searchViewModelEffect = PublishSubject.create<SearchUiEffect>()
@@ -75,19 +82,18 @@ class SearchViewModel(
 
     private fun fieldChanged(charSequence: CharSequence?, isFocused: Boolean) {
         if (charSequence == null) {
-            _searchViewModelState.value = SearchUiState.Initial
+            _searchViewModelState.onNext(SearchUiState.Initial)
             return
         }
 
         if (charSequence.isEmpty() && isFocused && getHistoryListUseCase().isNotEmpty()) {
-            _searchViewModelState.value = SearchUiState.HistoryTracks(getHistoryListUseCase())
+            _searchViewModelState.onNext(SearchUiState.HistoryTracks(getHistoryListUseCase()))
             return
         }
 
         if (_searchViewModelState.value is SearchUiState.HistoryTracks) {
-            _searchViewModelState.value = SearchUiState.WebTracks(emptyList())
+            _searchViewModelState.onNext(SearchUiState.WebTracks(emptyList()))
         }
-
         queryValue.onNext(charSequence.toString())
     }
 
@@ -106,13 +112,13 @@ class SearchViewModel(
     private fun retryQuery() {
         createSearchRequest(lastQuery)
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { _searchViewModelState.value = it }
+            .subscribe { _searchViewModelState.onNext(it) }
             .let(compositeDisposable::add)
     }
 
     private fun clearTrackHistory() {
         clearHistoryUseCase()
-        _searchViewModelState.value = SearchUiState.HistoryTracks(emptyList())
+        _searchViewModelState.onNext(SearchUiState.HistoryTracks(emptyList()))
     }
 
     private fun getTrackList() {
@@ -122,7 +128,7 @@ class SearchViewModel(
             .distinctUntilChanged()
             .switchMap { createSearchObservable(it) }
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { _searchViewModelState.value = it }
+            .subscribe { _searchViewModelState.onNext(it) }
             .let(compositeDisposable::add)
     }
 
@@ -130,28 +136,77 @@ class SearchViewModel(
         return createSearchRequest(query).takeWhile { query.length > 2 }
     }
 
-    private fun createSearchRequest(
-        query: String
-    ): Observable<SearchUiState> {
+    private fun createSearchRequest(query: String): Observable<SearchUiState> {
         lastQuery = query
         return getTrackListUseCase(query)
             .subscribeOn(Schedulers.io())
             .map { createSuccessState(it) }
             .toObservable()
             .startWith(SearchUiState.Loading)
-            .onErrorReturn { SearchUiState.WebError }
+            .onErrorReturn {
+                SearchUiState.Error(
+                    SearchFragmentErrors.InternetConnection(
+                        getErrorMessage(false).toString(),
+                        getErrorDrawable(false)
+                    )
+                )
+            }
     }
 
     private fun createSuccessState(tracks: List<Track>): SearchUiState {
         return if (tracks.isEmpty()) {
-            SearchUiState.Empty
+            SearchUiState.Error(
+                SearchFragmentErrors.EmptyResponse(
+                    getErrorMessage(true).toString(),
+                    getErrorDrawable(true)
+                )
+            )
         } else {
             SearchUiState.WebTracks(tracks)
+        }
+    }
+
+    private fun getErrorDrawable(isEmpty: Boolean): Drawable {
+        return if (isEmpty) {
+            application.theme.getDrawable(R.drawable.empty_light)
+        } else {
+            application.theme.getDrawable(R.drawable.error_light)
+        }
+    }
+
+    private fun getErrorMessage(isEmpty: Boolean): StringBuilder {
+        return if (isEmpty) {
+            StringBuilder(application.getString(R.string.empty_list))
+        } else {
+            StringBuilder(application.getString(R.string.internet_error))
+                .append(application.getString(R.string.spaces))
+                .append(application.getString(R.string.download_error))
         }
     }
 
     override fun onCleared() {
         super.onCleared()
         compositeDisposable.clear()
+    }
+
+    companion object {
+        fun getFactory(
+            getTrackListUseCase: GetTrackListUseCase,
+            getHistoryListUseCase: GetHistoryListUseCase,
+            addTrackToSearchHistoryUseCase: AddTrackToSearchHistoryUseCase,
+            clearHistoryUseCase: ClearHistoryUseCase
+        ): ViewModelProvider.Factory =
+            viewModelFactory {
+                initializer {
+                    val app = (this[APPLICATION_KEY] as Application)
+                    SearchViewModel(
+                        app,
+                        getTrackListUseCase,
+                        getHistoryListUseCase,
+                        addTrackToSearchHistoryUseCase,
+                        clearHistoryUseCase
+                    )
+                }
+            }
     }
 }

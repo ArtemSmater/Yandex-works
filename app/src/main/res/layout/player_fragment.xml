@@ -144,8 +144,8 @@
                 android:id="@+id/tvAlbum"
                 style="@style/PlayerLeftTextStyle"
                 android:layout_marginStart="0dp"
-                app:textVisibility="@{track.collectionName}"
                 android:text="@string/album"
+                app:textVisibility="@{track.collectionName}"
                 app:layout_constraintStart_toStartOf="@id/tvPlayerDuration"
                 app:layout_constraintTop_toBottomOf="@id/tvPlayerDuration"/>
 

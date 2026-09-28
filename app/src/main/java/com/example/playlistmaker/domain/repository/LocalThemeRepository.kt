@@ -1,6 +1,6 @@
 package com.example.playlistmaker.domain.repository
 
-interface ThemeRepository {
+interface LocalThemeRepository {
     fun getThemeValue() : Boolean
     fun setThemeValue(isNight: Boolean)
 }

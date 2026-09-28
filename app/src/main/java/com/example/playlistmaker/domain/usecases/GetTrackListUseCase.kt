@@ -5,7 +5,5 @@ import com.example.playlistmaker.domain.repository.TrackRepository
 import io.reactivex.Single
 
 class GetTrackListUseCase(private val repository: TrackRepository) {
-    operator fun invoke(query: String): Single<List<Track>> {
-        return repository.getTrackList(query)
-    }
+    operator fun invoke(query: String): Single<List<Track>> = repository.getTrackList(query)
 }

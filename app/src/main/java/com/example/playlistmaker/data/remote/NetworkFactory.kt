@@ -1,10 +1,10 @@
-package com.example.playlistmaker.data.network
+package com.example.playlistmaker.data.remote
 
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
-object ApiFactory {
+object NetworkFactory {
 
     private const val BASE_URL = "https://itunes.apple.com/"
 
@@ -14,5 +14,5 @@ object ApiFactory {
         .baseUrl(BASE_URL)
         .build()
 
-    val apiService: ApiService = retrofit.create(ApiService::class.java)
+    val apiService: NetworkClient = retrofit.create(NetworkClient::class.java)
 }

@@ -1,11 +1,11 @@
-package com.example.playlistmaker.data.network
+package com.example.playlistmaker.data.remote
 
-import com.example.playlistmaker.data.dto.TrackRequest
+import com.example.playlistmaker.data.dto.network.TrackRequest
 import io.reactivex.Single
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-interface ApiService {
+interface NetworkClient {
 
     @GET("/search?entity=song")
     fun getSongs(

@@ -2,8 +2,9 @@ package com.example.playlistmaker.domain.repository
 
 import com.example.playlistmaker.domain.entities.Track
 
-interface HistoryRepository {
+interface SearchHistoryRepository {
+
+    fun saveToHistory(track: Track)
     fun getHistory() : List<Track>
-    fun saveHistory(tracks: List<Track>)
     fun clearHistory()
 }

@@ -12,33 +12,26 @@ import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.PlayerFragmentBinding
 import com.example.playlistmaker.presentation.utils.FragmentTheme
 import com.example.playlistmaker.presentation.utils.checkTheme
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
+import io.reactivex.disposables.CompositeDisposable
 
 class PlayerFragment : Fragment() {
 
-    private val viewModelFactory by lazy {
-        val args = PlayerFragmentArgs.fromBundle(requireArguments())
-        PlayerViewModelFactory(args.Track)
+    private val args: PlayerFragmentArgs by navArgs()
+    private val viewModel by lazy {
+        ViewModelProvider(this, PlayerViewModel.getFactory(args.Track))[PlayerViewModel::class.java]
     }
-
-    private lateinit var viewModel: PlayerViewModel
-
-    private var disposable: Disposable? = null
+    private val compositeDisposable = CompositeDisposable()
 
     private var _binding: PlayerFragmentBinding? = null
     private val binding: PlayerFragmentBinding
         get() = _binding ?: throw RuntimeException("Player fragment binding is null!")
 
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this, viewModelFactory)[PlayerViewModel::class.java]
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -56,7 +49,7 @@ class PlayerFragment : Fragment() {
             v.updatePadding(top = bars.top, bottom = bars.bottom)
             insets
         }
-        binding.track = PlayerFragmentArgs.fromBundle(requireArguments()).Track
+        binding.track = args.Track
         binding.lifecycleOwner = viewLifecycleOwner
         checkTheme(FragmentTheme(lightSB = false, darkSB = true, lightNB = false, darkNB = true))
         observeActions()
@@ -70,8 +63,7 @@ class PlayerFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        disposable?.dispose()
-        disposable = null
+        compositeDisposable.clear()
         _binding = null
     }
 
@@ -88,13 +80,15 @@ class PlayerFragment : Fragment() {
     }
 
     private fun observeChanges() {
-        viewModel.playerViewModelState.observe(viewLifecycleOwner) {
-            checkScreenState(it)
-        }
+        viewModel.playerViewModelState
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { checkScreenState(it) }
+            .let(compositeDisposable::add)
 
-        disposable = viewModel.playerViewModelEffect
+        viewModel.playerViewModelEffect
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { findNavController().popBackStack() }
+            .let(compositeDisposable::add)
     }
 
     private fun checkScreenState(state: PlayerUiState) {

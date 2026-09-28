@@ -1,6 +1,5 @@
 package com.example.playlistmaker.presentation.ui.search
 
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,7 +13,6 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.SearchFragmentBinding
 import com.example.playlistmaker.di.Creator
 import com.example.playlistmaker.domain.entities.Track
@@ -24,7 +22,7 @@ import com.example.playlistmaker.presentation.utils.checkTheme
 import com.example.playlistmaker.presentation.utils.hideKeyboard
 import com.example.playlistmaker.presentation.utils.moveGuideline
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
+import io.reactivex.disposables.CompositeDisposable
 import kotlin.math.max
 
 class SearchFragment : Fragment() {
@@ -38,21 +36,18 @@ class SearchFragment : Fragment() {
         TrackAdapter()
     }
 
-    // view models for screen info
-    private val viewModelFactory by lazy {
-        SearchViewModelFactory(
-            Creator.getTrackListUseCase,
-            Creator.getHistoryListUseCase,
-            Creator.addTrackToSearchHistoryUseCase,
-            Creator.clearHistoryUseCase
-        )
-    }
-
     private val viewModel by lazy {
-        ViewModelProvider(this, viewModelFactory)[SearchViewModel::class.java]
+        ViewModelProvider(
+            this, SearchViewModel.getFactory(
+                Creator.getTrackListUseCase,
+                Creator.getHistoryListUseCase,
+                Creator.addTrackToSearchHistoryUseCase,
+                Creator.clearHistoryUseCase
+            )
+        )[SearchViewModel::class.java]
     }
 
-    private var disposable: Disposable? = null
+    private val compositeDisposable = CompositeDisposable()
 
     // view binding
     private var _binding: SearchFragmentBinding? = null
@@ -89,19 +84,20 @@ class SearchFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        disposable?.dispose()
-        disposable = null
+        compositeDisposable.clear()
         _binding = null
     }
 
     private fun observeChanges() {
-        viewModel.searchViewModelState.observe(viewLifecycleOwner) {
-            checkScreenState(it)
-        }
+        viewModel.searchViewModelState
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { checkScreenState(it) }
+            .let(compositeDisposable::add)
 
-        disposable = viewModel.searchViewModelEffect
+        viewModel.searchViewModelEffect
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { checkScreenEffect(it) }
+            .let(compositeDisposable::add)
     }
 
     private fun observeActions() {
@@ -133,11 +129,11 @@ class SearchFragment : Fragment() {
             }
 
             trackAdapter.onTrackClickListener = {
-                viewModel.uiAction(SearchUiAction.TrackClicked(it, false))
+                viewModel.uiAction(SearchUiAction.TrackClicked(it))
             }
 
             cacheAdapter.onTrackClickListener = {
-                viewModel.uiAction(SearchUiAction.TrackClicked(it, true))
+                viewModel.uiAction(SearchUiAction.TrackClicked(it))
             }
 
             tbSearch.setNavigationOnClickListener {
@@ -178,12 +174,8 @@ class SearchFragment : Fragment() {
                 showCacheScreen(state.tracks)
             }
 
-            is SearchUiState.Empty -> {
-                emptyErrorScreen()
-            }
-
-            is SearchUiState.WebError -> {
-                webErrorScreen()
+            is SearchUiState.Error -> {
+                showErrorScreen(state.error)
             }
         }
     }
@@ -194,7 +186,7 @@ class SearchFragment : Fragment() {
         defaultField(binding.etSearch)
         trackAdapter.submitList(emptyList())
         cacheVisibility(false)
-        errorVisibility(visibility = false, isEmpty = true)
+        checkErrorState(SearchFragmentErrors.HideSearchErrors)
     }
 
     private fun showCacheScreen(tracks: List<Track>) {
@@ -202,7 +194,7 @@ class SearchFragment : Fragment() {
         cacheAdapter.submitList(tracks)
         trackAdapter.submitList(emptyList())
         cacheVisibility(tracks.isNotEmpty())
-        errorVisibility(visibility = false, isEmpty = true)
+        checkErrorState(SearchFragmentErrors.HideSearchErrors)
     }
 
     private fun showLoadingScreen() {
@@ -210,30 +202,34 @@ class SearchFragment : Fragment() {
         binding.pbSearch?.isVisible = true
         trackAdapter.submitList(emptyList())
         cacheVisibility(false)
-        errorVisibility(visibility = false, isEmpty = true)
+        checkErrorState(SearchFragmentErrors.HideSearchErrors)
     }
 
     private fun showTracksScreen(tracks: List<Track>) {
         binding.pbSearch?.isVisible = false
         trackAdapter.submitList(tracks)
         cacheVisibility(false)
-        errorVisibility(visibility = false, isEmpty = true)
+        checkErrorState(SearchFragmentErrors.HideSearchErrors)
     }
 
-    private fun emptyErrorScreen() {
+    private fun showErrorScreen(state: SearchFragmentErrors) {
         binding.pbSearch?.isVisible = false
         trackAdapter.submitList(emptyList())
         cacheVisibility(false)
-        errorVisibility(visibility = true, isEmpty = true)
-    }
+        when (state) {
+            is SearchFragmentErrors.InternetConnection -> {
+                checkErrorState(state)
+            }
 
-    private fun webErrorScreen() {
-        binding.pbSearch?.isVisible = false
-        trackAdapter.submitList(emptyList())
-        cacheVisibility(false)
-        errorVisibility(visibility = true, isEmpty = false)
-    }
+            is SearchFragmentErrors.HideSearchErrors -> {
+                checkErrorState(state)
+            }
 
+            is SearchFragmentErrors.EmptyResponse -> {
+                checkErrorState(state)
+            }
+        }
+    }
 
     // visibility settings
     private fun cacheVisibility(visibility: Boolean) {
@@ -244,43 +240,15 @@ class SearchFragment : Fragment() {
         }
     }
 
-    private fun errorVisibility(visibility: Boolean, isEmpty: Boolean) {
+    private fun checkErrorState(state: SearchFragmentErrors) {
         with(binding) {
-            tvErrorMessage.isVisible = visibility
-            ivErrorPlaceholder.isVisible = visibility
-            btnToUpload.isVisible = !isEmpty
-        }
-
-        if (visibility) {
-            setErrorViews(isEmpty)
+            tvErrorMessage.isVisible = state.tvVisible
+            ivErrorPlaceholder.isVisible = state.ivVisible
+            btnToUpload.isVisible = state.bnVisible
+            ivErrorPlaceholder.setImageDrawable(state.errorImg)
+            tvErrorMessage.text = state.errorMsg
         }
     }
-
-    private fun setErrorViews(isEmpty: Boolean) {
-        with(binding) {
-            ivErrorPlaceholder.setImageDrawable(getErrorDrawable(isEmpty))
-            tvErrorMessage.text = getErrorMessage(isEmpty)
-        }
-    }
-
-    private fun getErrorDrawable(isEmpty: Boolean): Drawable {
-        return if (isEmpty) {
-            requireActivity().theme.getDrawable(R.drawable.empty_light)
-        } else {
-            requireActivity().theme.getDrawable(R.drawable.error_light)
-        }
-    }
-
-    private fun getErrorMessage(isEmpty: Boolean): StringBuilder {
-        return if (isEmpty) {
-            StringBuilder(getString(R.string.empty_list))
-        } else {
-            StringBuilder(getString(R.string.internet_error))
-                .append(getString(R.string.spaces))
-                .append(getString(R.string.download_error))
-        }
-    }
-
 
     private fun defaultField(editText: EditText) {
         editText.hideKeyboard(requireActivity())
