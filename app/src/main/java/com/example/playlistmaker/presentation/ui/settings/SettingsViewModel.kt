@@ -1,28 +1,28 @@
 package com.example.playlistmaker.presentation.ui.settings
 
-import android.app.Application
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.playlistmaker.App
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.playlistmaker.domain.usecases.GetThemeUseCase
+import com.example.playlistmaker.domain.usecases.UpdateThemeUseCase
 import io.reactivex.Observable
+import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 
 class SettingsViewModel(
     private val getThemeUseCase: GetThemeUseCase,
-    private val application: Application
+    private val updateThemeUseCase: UpdateThemeUseCase
 ) : ViewModel() {
 
-    private val _themeViewModel = MutableLiveData<Boolean>()
-    val themeViewModel: LiveData<Boolean>
-        get() = _themeViewModel
+    private val _themeViewModel = BehaviorSubject.create<Boolean>()
+    val themeViewModel: Observable<Boolean> = _themeViewModel.hide()
 
     private var _settingsViewModelEffects = PublishSubject.create<SettingsUiEffects>()
     val settingsViewModelEffects: Observable<SettingsUiEffects> = _settingsViewModelEffects.hide()
 
     init {
-        _themeViewModel.value = getThemeUseCase()
+        _themeViewModel.onNext(getThemeUseCase())
     }
 
     fun uiAction(action: SettingsUiActions) {
@@ -66,7 +66,16 @@ class SettingsViewModel(
     }
 
     private fun updateTheme(isChecked: Boolean) {
-        (application as App).switchTheme(isChecked)
-        _themeViewModel.value = getThemeUseCase()
+        updateThemeUseCase(isChecked)
+        _themeViewModel.onNext(getThemeUseCase())
+    }
+
+    companion object {
+        fun getFactory(getThemeUseCase: GetThemeUseCase, updateThemeUseCase: UpdateThemeUseCase): ViewModelProvider.Factory =
+            viewModelFactory {
+                initializer {
+                    SettingsViewModel(getThemeUseCase, updateThemeUseCase)
+                }
+            }
     }
 }

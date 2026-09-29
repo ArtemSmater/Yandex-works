@@ -8,11 +8,19 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.playlistmaker.databinding.MenuFragmentBinding
 import com.example.playlistmaker.presentation.utils.configureSystemBars
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
 
 class MenuFragment : Fragment() {
+
+    private var disposable: Disposable? = null
+    private val viewModel by lazy {
+        ViewModelProvider(this)[MenuViewModel::class.java]
+    }
 
     private var _binding: MenuFragmentBinding? = null
     private val binding: MenuFragmentBinding
@@ -36,26 +44,45 @@ class MenuFragment : Fragment() {
             insets
         }
         configureSystemBars(lightStatusBarIcons = false, lightNavigationBarIcons = false)
-        listeners()
+        observeActions()
+        observeChanges()
     }
 
 
     override fun onDestroyView() {
         super.onDestroyView()
+        disposable?.dispose()
         _binding = null
     }
 
-    private fun listeners() {
-        binding.btnSearch.setOnClickListener {
-            findNavController().navigate(MenuFragmentDirections.actionMenuFragmentToSearchFragment())
+    private fun observeActions() {
+        with(binding) {
+            btnSearch.setOnClickListener { viewModel.uiActions(MenuUiActions.LaunchSearchFragment) }
+            btnMedia.setOnClickListener { viewModel.uiActions(MenuUiActions.LaunchMediaFragment) }
+            btnSettings.setOnClickListener { viewModel.uiActions(MenuUiActions.LaunchSettingsFragment) }
         }
+    }
 
-        binding.btnMedia.setOnClickListener {
-            findNavController().navigate(MenuFragmentDirections.actionMenuFragmentToMediaFragment())
-        }
+    private fun observeChanges() {
+        disposable = viewModel.menuUiActions
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { render(it) }
+    }
 
-        binding.btnSettings.setOnClickListener {
-            findNavController().navigate(MenuFragmentDirections.actionMenuFragmentToSettingsFragment())
+
+    private fun render(action: MenuUiActions) {
+        when (action) {
+            is MenuUiActions.LaunchSearchFragment -> {
+                findNavController().navigate(MenuFragmentDirections.actionMenuFragmentToSearchFragment())
+            }
+
+            is MenuUiActions.LaunchMediaFragment -> {
+                findNavController().navigate(MenuFragmentDirections.actionMenuFragmentToMediaFragment())
+            }
+
+            is MenuUiActions.LaunchSettingsFragment -> {
+                findNavController().navigate(MenuFragmentDirections.actionMenuFragmentToSettingsFragment())
+            }
         }
     }
 }

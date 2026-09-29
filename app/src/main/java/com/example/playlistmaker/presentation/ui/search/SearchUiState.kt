@@ -4,10 +4,9 @@ import com.example.playlistmaker.domain.entities.Track
 
 sealed interface SearchUiState {
 
-    data object Initial : SearchUiState
-    data object Loading : SearchUiState
-    data object Empty : SearchUiState
-    data object WebError : SearchUiState
-    data class WebTracks(val tracks: List<Track>) : SearchUiState
-    data class HistoryTracks(val tracks: List<Track>) : SearchUiState
+    object Initial : SearchUiState
+    object Loading : SearchUiState
+    class Error(val error: SearchFragmentErrors) : SearchUiState
+    class WebTracks(val tracks: List<Track>) : SearchUiState
+    class HistoryTracks(val tracks: List<Track>) : SearchUiState
 }

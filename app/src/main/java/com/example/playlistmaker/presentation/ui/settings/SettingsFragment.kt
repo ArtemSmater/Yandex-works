@@ -8,7 +8,6 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.playlistmaker.databinding.SettingsFragmentBinding
@@ -17,21 +16,19 @@ import com.example.playlistmaker.presentation.utils.FragmentTheme
 import com.example.playlistmaker.presentation.utils.IntentFactory
 import com.example.playlistmaker.presentation.utils.checkTheme
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
+import io.reactivex.disposables.CompositeDisposable
 
 class SettingsFragment : Fragment() {
 
-    private val viewModelFactory by lazy {
-        SettingsViewModelFactory(
-            Creator.getThemeUseCase,
-            requireActivity().application
-        )
-    }
-
     private val viewModel by lazy {
-        ViewModelProvider(this, viewModelFactory)[SettingsViewModel::class.java]
+        ViewModelProvider(
+            this,
+            SettingsViewModel.getFactory(
+                Creator.getThemeUseCase,
+                Creator.getUpdateThemeUseCase)
+        )[SettingsViewModel::class.java]
     }
-    private var disposable: Disposable? = null
+    private val compositeDisposable = CompositeDisposable()
 
     private var _binding: SettingsFragmentBinding? = null
     private val binding: SettingsFragmentBinding
@@ -60,19 +57,20 @@ class SettingsFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        disposable?.dispose()
-        disposable = null
+        compositeDisposable.clear()
         _binding = null
     }
 
     private fun observeEffects() {
-        viewModel.themeViewModel.observe(viewLifecycleOwner, Observer {
-            binding.switchTheme.isChecked = it
-        })
+        viewModel.themeViewModel
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { binding.switchTheme.isChecked = it }
+            .let(compositeDisposable::add)
 
-        disposable = viewModel.settingsViewModelEffects
+        viewModel.settingsViewModelEffects
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { checkEffects(it) }
+            .let(compositeDisposable::add)
     }
 
     private fun checkEffects(effect: SettingsUiEffects) {

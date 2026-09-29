@@ -1,17 +1,16 @@
-package com.example.playlistmaker.data.network
+package com.example.playlistmaker.data.remote
 
-import com.example.playlistmaker.data.dto.TrackRequest
-import io.reactivex.Single
+import com.example.playlistmaker.data.dto.network.TrackRequest
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-interface ApiService {
+interface NetworkClient {
 
     @GET("/search?entity=song")
-    fun getSongs(
+    suspend fun getSongs(
         @Query(QUERY_PARAM_TERM) term: String,
         @Query(QUERY_PARAM_ENTITY) entity: String = "song"
-    ): Single<TrackRequest>
+    ): TrackRequest
 
     companion object {
         private const val QUERY_PARAM_ENTITY = "entity"
