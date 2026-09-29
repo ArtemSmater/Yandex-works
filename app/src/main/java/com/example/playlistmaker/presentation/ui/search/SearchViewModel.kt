@@ -2,6 +2,7 @@ package com.example.playlistmaker.presentation.ui.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.playlistmaker.domain.entities.Track
@@ -9,13 +10,22 @@ import com.example.playlistmaker.domain.usecases.AddTrackToSearchHistoryUseCase
 import com.example.playlistmaker.domain.usecases.ClearHistoryUseCase
 import com.example.playlistmaker.domain.usecases.GetHistoryListUseCase
 import com.example.playlistmaker.domain.usecases.GetTrackListUseCase
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.BehaviorSubject
-import io.reactivex.subjects.PublishSubject
-import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.takeWhile
+import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 class SearchViewModel(
     private val getTrackListUseCase: GetTrackListUseCase,
@@ -25,22 +35,20 @@ class SearchViewModel(
 ) : ViewModel() {
 
     private lateinit var lastQuery: String
-    private val compositeDisposable = CompositeDisposable()
 
     // main observable query field
-    private val queryValue = PublishSubject.create<String>()
+    private val queryValue = MutableStateFlow("")
 
     // double click security
-    private val trackClick = PublishSubject.create<Track>()
+    private val trackClick = MutableSharedFlow<Track>(extraBufferCapacity = 1)
 
     // for ui state subscribers
-    private var _searchViewModelState =
-        BehaviorSubject.createDefault<SearchUiState>(SearchUiState.Initial)
-    val searchViewModelState: Observable<SearchUiState> = _searchViewModelState.hide()
+    private val _searchViewModelState = MutableStateFlow<SearchUiState>(SearchUiState.Initial)
+    val state = _searchViewModelState.asStateFlow()
 
     // for effects subscribers
-    private var _searchViewModelEffect = PublishSubject.create<SearchUiEffect>()
-    val searchViewModelEffect: Observable<SearchUiEffect> = _searchViewModelEffect.hide()
+    private val _searchViewModelEffect = MutableSharedFlow<SearchUiEffect>(extraBufferCapacity = 1)
+    val effect = _searchViewModelEffect.asSharedFlow()
 
     init {
         getTrackList()
@@ -72,74 +80,79 @@ class SearchViewModel(
     }
 
     private fun backPressed() {
-        _searchViewModelEffect.onNext(SearchUiEffect.BackPressed)
+        _searchViewModelEffect.tryEmit(SearchUiEffect.BackPressed)
     }
 
     private fun fieldChanged(charSequence: CharSequence?, isFocused: Boolean) {
-        if (charSequence == null) {
-            _searchViewModelState.onNext(SearchUiState.Initial)
-            return
-        }
+        viewModelScope.launch {
+            if (charSequence == null) {
+                _searchViewModelState.value = SearchUiState.Initial
+                return@launch
+            }
 
-        if (charSequence.isEmpty() && isFocused && getHistoryListUseCase().isNotEmpty()) {
-            _searchViewModelState.onNext(SearchUiState.HistoryTracks(getHistoryListUseCase()))
-            return
-        }
+            if (charSequence.isEmpty() && isFocused && getHistoryListUseCase().isNotEmpty()) {
+                _searchViewModelState.value = SearchUiState.HistoryTracks(getHistoryListUseCase())
+                return@launch
+            }
 
-        if (_searchViewModelState.value is SearchUiState.HistoryTracks) {
-            _searchViewModelState.onNext(SearchUiState.WebTracks(emptyList()))
+            if (_searchViewModelState.value is SearchUiState.HistoryTracks) {
+                _searchViewModelState.value = SearchUiState.WebTracks(emptyList())
+            }
+            queryValue.value = charSequence.toString()
         }
-        queryValue.onNext(charSequence.toString())
     }
 
     private fun trackClicked(track: Track) {
-        addTrackToSearchHistoryUseCase(track)
-        trackClick.onNext(track)
+        trackClick.tryEmit(track)
+        viewModelScope.launch {
+            addTrackToSearchHistoryUseCase(track)
+        }
     }
 
+    @OptIn(FlowPreview::class)
     private fun getTrackClick() {
-        trackClick
-            .debounce(200, TimeUnit.MILLISECONDS)
-            .subscribe { _searchViewModelEffect.onNext(SearchUiEffect.OpenPlayer(it)) }
-            .let(compositeDisposable::add)
+        viewModelScope.launch {
+            trackClick
+                .debounce(200.milliseconds)
+                .collect { _searchViewModelEffect.emit(SearchUiEffect.OpenPlayer(it)) }
+        }
     }
 
     private fun retryQuery() {
-        createSearchRequest(lastQuery)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { _searchViewModelState.onNext(it) }
-            .let(compositeDisposable::add)
+        viewModelScope.launch {
+            createSearchFlow(lastQuery).collect { _searchViewModelState.value = it }
+        }
     }
 
     private fun clearTrackHistory() {
-        clearHistoryUseCase()
-        _searchViewModelState.onNext(SearchUiState.HistoryTracks(emptyList()))
+        _searchViewModelState.value = SearchUiState.HistoryTracks(emptyList())
+        viewModelScope.launch {
+            clearHistoryUseCase()
+        }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
     private fun getTrackList() {
-        queryValue
-            .debounce(2, TimeUnit.SECONDS)
-            .map { it.trim() }
-            .distinctUntilChanged()
-            .switchMap { createSearchObservable(it) }
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { _searchViewModelState.onNext(it) }
-            .let(compositeDisposable::add)
+        viewModelScope.launch {
+            queryValue
+                .debounce(2000.milliseconds)
+                .map { it.trim() }
+                .distinctUntilChanged()
+                .flatMapLatest { createSearchFlow(it) }
+                .collect { _searchViewModelState.value = it }
+        }
     }
 
-    private fun createSearchObservable(query: String): Observable<SearchUiState> {
+    private fun createSearchFlow(query: String): Flow<SearchUiState> {
         return createSearchRequest(query).takeWhile { query.length > 2 }
     }
 
-    private fun createSearchRequest(query: String): Observable<SearchUiState> {
+    private fun createSearchRequest(query: String): Flow<SearchUiState> = flow {
         lastQuery = query
-        return getTrackListUseCase(query)
-            .subscribeOn(Schedulers.io())
-            .map { createSuccessState(it) }
-            .toObservable()
-            .startWith(SearchUiState.Loading)
-            .onErrorReturn { SearchUiState.Error(SearchFragmentErrors.InternetConnection()) }
-    }
+        emit(SearchUiState.Loading)
+        val tracks = getTrackListUseCase(query)
+        emit(createSuccessState(tracks))
+    }.catch { emit(SearchUiState.Error(SearchFragmentErrors.InternetConnection())) }
 
     private fun createSuccessState(tracks: List<Track>): SearchUiState {
         return if (tracks.isEmpty()) {
@@ -147,11 +160,6 @@ class SearchViewModel(
         } else {
             SearchUiState.WebTracks(tracks)
         }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        compositeDisposable.clear()
     }
 
     companion object {

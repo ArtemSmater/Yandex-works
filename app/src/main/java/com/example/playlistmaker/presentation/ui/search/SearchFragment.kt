@@ -12,7 +12,10 @@ import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.SearchFragmentBinding
@@ -23,8 +26,7 @@ import com.example.playlistmaker.presentation.utils.Transform
 import com.example.playlistmaker.presentation.utils.checkTheme
 import com.example.playlistmaker.presentation.utils.hideKeyboard
 import com.example.playlistmaker.presentation.utils.moveGuideline
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.launch
 import kotlin.math.max
 
 class SearchFragment : Fragment() {
@@ -48,8 +50,6 @@ class SearchFragment : Fragment() {
             )
         )[SearchViewModel::class.java]
     }
-
-    private val compositeDisposable = CompositeDisposable()
 
     // view binding
     private var _binding: SearchFragmentBinding? = null
@@ -86,20 +86,25 @@ class SearchFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        compositeDisposable.clear()
         _binding = null
     }
 
     private fun observeChanges() {
-        viewModel.searchViewModelState
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { checkScreenState(it) }
-            .let(compositeDisposable::add)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.state.collect {
+                        checkScreenState(it)
+                    }
+                }
 
-        viewModel.searchViewModelEffect
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { checkScreenEffect(it) }
-            .let(compositeDisposable::add)
+                launch {
+                    viewModel.effect.collect {
+                        checkScreenEffect(it)
+                    }
+                }
+            }
+        }
     }
 
     private fun observeActions() {

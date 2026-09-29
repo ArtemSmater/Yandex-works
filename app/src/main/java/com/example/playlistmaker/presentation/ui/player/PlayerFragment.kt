@@ -10,15 +10,17 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.PlayerFragmentBinding
 import com.example.playlistmaker.presentation.utils.FragmentTheme
 import com.example.playlistmaker.presentation.utils.checkTheme
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.launch
 
 class PlayerFragment : Fragment() {
 
@@ -29,8 +31,6 @@ class PlayerFragment : Fragment() {
             PlayerViewModel.getFactory(args.Track)
         )[PlayerViewModel::class.java]
     }
-    private val compositeDisposable = CompositeDisposable()
-
     private var _binding: PlayerFragmentBinding? = null
     private val binding: PlayerFragmentBinding
         get() = _binding ?: throw RuntimeException("Player fragment binding is null!")
@@ -66,7 +66,6 @@ class PlayerFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        compositeDisposable.clear()
         _binding = null
     }
 
@@ -83,15 +82,21 @@ class PlayerFragment : Fragment() {
     }
 
     private fun observeChanges() {
-        viewModel.playerViewModelState
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { checkScreenState(it) }
-            .let(compositeDisposable::add)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.state.collect {
+                        checkScreenState(it)
+                    }
+                }
 
-        viewModel.playerViewModelEffect
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { findNavController().popBackStack() }
-            .let(compositeDisposable::add)
+                launch {
+                    viewModel.effect.collect {
+                        findNavController().popBackStack()
+                    }
+                }
+            }
+        }
     }
 
     private fun checkScreenState(state: PlayerUiState) {

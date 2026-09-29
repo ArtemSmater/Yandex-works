@@ -3,19 +3,24 @@ package com.example.playlistmaker.presentation.ui.player
 import android.media.MediaPlayer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.playlistmaker.domain.entities.Track
-import com.example.playlistmaker.presentation.utils.Transform
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.subjects.BehaviorSubject
-import io.reactivex.subjects.PublishSubject
 import com.example.playlistmaker.presentation.ui.player.PlayerStates.DEFAULT
-import com.example.playlistmaker.presentation.ui.player.PlayerStates.PREPARED
-import com.example.playlistmaker.presentation.ui.player.PlayerStates.PLAYING
 import com.example.playlistmaker.presentation.ui.player.PlayerStates.PAUSED
+import com.example.playlistmaker.presentation.ui.player.PlayerStates.PLAYING
+import com.example.playlistmaker.presentation.ui.player.PlayerStates.PREPARED
+import com.example.playlistmaker.presentation.utils.Transform
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 class PlayerViewModel(
     private val track: Track
@@ -27,15 +32,15 @@ class PlayerViewModel(
     private var playerState = DEFAULT
 
     // for ui state subscribers
-    private val _playerViewModelState = BehaviorSubject.create<PlayerUiState>()
-    val playerViewModelState: Observable<PlayerUiState> = _playerViewModelState.hide()
+    private val _playerViewModelState = MutableStateFlow<PlayerUiState>(PlayerUiState.Initial)
+    val state = _playerViewModelState.asStateFlow()
 
     // for effects subscribers
-    private val _playerViewModelEffect = PublishSubject.create<PlayerUiEffect>()
-    val playerViewModelEffect: Observable<PlayerUiEffect> = _playerViewModelEffect.hide()
+    private val _playerViewModelEffect = MutableSharedFlow<PlayerUiEffect>(extraBufferCapacity = 1)
+    val effect = _playerViewModelEffect.asSharedFlow()
 
     // progress subscriber object
-    private var progressDisposable: Disposable? = null
+    private var progressJob: Job? = null
 
     init {
         preparePlayer()
@@ -71,14 +76,19 @@ class PlayerViewModel(
     }
 
     private fun startProgressChecking() {
-        progressDisposable = Observable
-            .interval(300, java.util.concurrent.TimeUnit.MILLISECONDS)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { sendNewProgress(getPlayerProgress()) }
+        progressJob?.cancel()
+
+        progressJob = viewModelScope.launch {
+            while (isActive) {
+                sendNewProgress(getPlayerProgress())
+                delay(300.milliseconds)
+            }
+        }
     }
 
     private fun stopProgressChecking() {
-        progressDisposable?.dispose()
+        progressJob?.cancel()
+        progressJob = null
     }
 
     private fun playbackControl() {
@@ -92,36 +102,36 @@ class PlayerViewModel(
     private fun play() {
         mediaPlayer.start()
         playerState = PLAYING
-        _playerViewModelState.onNext(PlayerUiState.Playing(getPlayerProgress()))
+        _playerViewModelState.value = PlayerUiState.Playing(getPlayerProgress())
         startProgressChecking()
     }
 
     private fun pause() {
         mediaPlayer.pause()
         playerState = PAUSED
-        _playerViewModelState.onNext(PlayerUiState.Paused(getPlayerProgress()))
+        _playerViewModelState.value = PlayerUiState.Paused(getPlayerProgress())
         stopProgressChecking()
     }
 
     private fun backPressed() {
-        _playerViewModelEffect.onNext(PlayerUiEffect.ClosePlayer)
+        _playerViewModelEffect.tryEmit(PlayerUiEffect.ClosePlayer)
     }
 
     private fun setListeners() {
         mediaPlayer.setOnPreparedListener {
             playerState = PREPARED
-            _playerViewModelState.onNext(PlayerUiState.Prepared)
+            _playerViewModelState.value = PlayerUiState.Prepared
         }
 
         mediaPlayer.setOnCompletionListener {
             playerState = PREPARED
             stopProgressChecking()
-            _playerViewModelState.onNext(PlayerUiState.Prepared)
+            _playerViewModelState.value = PlayerUiState.Prepared
         }
     }
 
     private fun sendNewProgress(progress: String) {
-        _playerViewModelState.onNext(PlayerUiState.Playing(progress))
+        _playerViewModelState.value = PlayerUiState.Playing(progress)
     }
 
     private fun getPlayerProgress(): String {
@@ -134,7 +144,6 @@ class PlayerViewModel(
         super.onCleared()
         stopProgressChecking()
         mediaPlayer.release()
-        progressDisposable = null
     }
 
     companion object {
