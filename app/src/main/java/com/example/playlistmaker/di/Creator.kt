@@ -17,11 +17,13 @@ import com.example.playlistmaker.domain.usecases.GetHistoryListUseCase
 import com.example.playlistmaker.domain.usecases.GetThemeUseCase
 import com.example.playlistmaker.domain.usecases.GetTrackListUseCase
 import com.example.playlistmaker.domain.usecases.UpdateThemeUseCase
+import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
 object Creator {
 
     private lateinit var application: Application
+    private val gson = Gson()
 
     // init function
     fun init(application: Application) {
@@ -38,7 +40,8 @@ object Creator {
             PrefsStorageClient(
                 application,
                 PrefsStorageClient.SHARED_KEY_CACHE,
-                object : TypeToken<ArrayList<TrackEntity>>() {}.type
+                object : TypeToken<ArrayList<TrackEntity>>() {}.type,
+                gson
             )
         )
     }
@@ -49,10 +52,12 @@ object Creator {
 
     private val themeRepository: LocalThemeRepository by lazy {
         LocalThemeRepositoryImpl(
+            application,
             PrefsStorageClient(
                 application,
                 PrefsStorageClient.SHARED_KEY_THEME,
-                object : TypeToken<Boolean>() {}.type
+                object : TypeToken<Boolean>() {}.type,
+                gson
             )
         )
     }

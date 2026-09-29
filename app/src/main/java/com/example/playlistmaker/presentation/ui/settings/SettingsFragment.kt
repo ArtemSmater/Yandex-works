@@ -23,7 +23,9 @@ class SettingsFragment : Fragment() {
     private val viewModel by lazy {
         ViewModelProvider(
             this,
-            SettingsViewModel.getFactory(Creator.getThemeUseCase)
+            SettingsViewModel.getFactory(
+                Creator.getThemeUseCase,
+                Creator.getUpdateThemeUseCase)
         )[SettingsViewModel::class.java]
     }
     private val compositeDisposable = CompositeDisposable()

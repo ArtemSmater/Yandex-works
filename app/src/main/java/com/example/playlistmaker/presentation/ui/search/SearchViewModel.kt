@@ -1,13 +1,9 @@
 package com.example.playlistmaker.presentation.ui.search
 
-import android.app.Application
-import android.graphics.drawable.Drawable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.playlistmaker.R
 import com.example.playlistmaker.domain.entities.Track
 import com.example.playlistmaker.domain.usecases.AddTrackToSearchHistoryUseCase
 import com.example.playlistmaker.domain.usecases.ClearHistoryUseCase
@@ -22,7 +18,6 @@ import io.reactivex.subjects.PublishSubject
 import java.util.concurrent.TimeUnit
 
 class SearchViewModel(
-    private val application: Application,
     private val getTrackListUseCase: GetTrackListUseCase,
     private val getHistoryListUseCase: GetHistoryListUseCase,
     private val addTrackToSearchHistoryUseCase: AddTrackToSearchHistoryUseCase,
@@ -143,44 +138,14 @@ class SearchViewModel(
             .map { createSuccessState(it) }
             .toObservable()
             .startWith(SearchUiState.Loading)
-            .onErrorReturn {
-                SearchUiState.Error(
-                    SearchFragmentErrors.InternetConnection(
-                        getErrorMessage(false).toString(),
-                        getErrorDrawable(false)
-                    )
-                )
-            }
+            .onErrorReturn { SearchUiState.Error(SearchFragmentErrors.InternetConnection()) }
     }
 
     private fun createSuccessState(tracks: List<Track>): SearchUiState {
         return if (tracks.isEmpty()) {
-            SearchUiState.Error(
-                SearchFragmentErrors.EmptyResponse(
-                    getErrorMessage(true).toString(),
-                    getErrorDrawable(true)
-                )
-            )
+            SearchUiState.Error(SearchFragmentErrors.EmptyResponse())
         } else {
             SearchUiState.WebTracks(tracks)
-        }
-    }
-
-    private fun getErrorDrawable(isEmpty: Boolean): Drawable {
-        return if (isEmpty) {
-            application.theme.getDrawable(R.drawable.empty_light)
-        } else {
-            application.theme.getDrawable(R.drawable.error_light)
-        }
-    }
-
-    private fun getErrorMessage(isEmpty: Boolean): StringBuilder {
-        return if (isEmpty) {
-            StringBuilder(application.getString(R.string.empty_list))
-        } else {
-            StringBuilder(application.getString(R.string.internet_error))
-                .append(application.getString(R.string.spaces))
-                .append(application.getString(R.string.download_error))
         }
     }
 
@@ -198,9 +163,7 @@ class SearchViewModel(
         ): ViewModelProvider.Factory =
             viewModelFactory {
                 initializer {
-                    val app = (this[APPLICATION_KEY] as Application)
                     SearchViewModel(
-                        app,
                         getTrackListUseCase,
                         getHistoryListUseCase,
                         addTrackToSearchHistoryUseCase,

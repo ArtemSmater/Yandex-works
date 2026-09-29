@@ -1,20 +1,18 @@
 package com.example.playlistmaker.presentation.ui.settings
 
-import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.playlistmaker.App
 import com.example.playlistmaker.domain.usecases.GetThemeUseCase
+import com.example.playlistmaker.domain.usecases.UpdateThemeUseCase
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 
 class SettingsViewModel(
     private val getThemeUseCase: GetThemeUseCase,
-    private val application: Application
+    private val updateThemeUseCase: UpdateThemeUseCase
 ) : ViewModel() {
 
     private val _themeViewModel = BehaviorSubject.create<Boolean>()
@@ -68,16 +66,15 @@ class SettingsViewModel(
     }
 
     private fun updateTheme(isChecked: Boolean) {
-        (application as App).switchTheme(isChecked)
+        updateThemeUseCase(isChecked)
         _themeViewModel.onNext(getThemeUseCase())
     }
 
     companion object {
-        fun getFactory(getThemeUseCase: GetThemeUseCase): ViewModelProvider.Factory =
+        fun getFactory(getThemeUseCase: GetThemeUseCase, updateThemeUseCase: UpdateThemeUseCase): ViewModelProvider.Factory =
             viewModelFactory {
                 initializer {
-                    val app = (this[APPLICATION_KEY] as Application)
-                    SettingsViewModel(getThemeUseCase, app)
+                    SettingsViewModel(getThemeUseCase, updateThemeUseCase)
                 }
             }
     }

@@ -12,13 +12,19 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
+import com.example.playlistmaker.presentation.ui.player.PlayerStates.DEFAULT
+import com.example.playlistmaker.presentation.ui.player.PlayerStates.PREPARED
+import com.example.playlistmaker.presentation.ui.player.PlayerStates.PLAYING
+import com.example.playlistmaker.presentation.ui.player.PlayerStates.PAUSED
 
-class PlayerViewModel(val track: Track) : ViewModel() {
+class PlayerViewModel(
+    private val track: Track
+) : ViewModel() {
 
-    private val mediaPlayer: MediaPlayer by lazy {
+    private val mediaPlayer by lazy {
         MediaPlayer()
     }
-    private var playerState = STATE_DEFAULT
+    private var playerState = DEFAULT
 
     // for ui state subscribers
     private val _playerViewModelState = BehaviorSubject.create<PlayerUiState>()
@@ -53,7 +59,7 @@ class PlayerViewModel(val track: Track) : ViewModel() {
     }
 
     private fun checkPlaying() {
-        if (playerState == STATE_PLAYING) {
+        if (playerState == PLAYING) {
             pause()
         }
     }
@@ -77,21 +83,22 @@ class PlayerViewModel(val track: Track) : ViewModel() {
 
     private fun playbackControl() {
         when (playerState) {
-            STATE_PLAYING -> pause()
-            STATE_PAUSED, STATE_PREPARED -> play()
+            PLAYING -> pause()
+            PAUSED, PREPARED -> play()
+            else -> throw RuntimeException("Unknown player state!")
         }
     }
 
     private fun play() {
         mediaPlayer.start()
-        playerState = STATE_PLAYING
+        playerState = PLAYING
         _playerViewModelState.onNext(PlayerUiState.Playing(getPlayerProgress()))
         startProgressChecking()
     }
 
     private fun pause() {
         mediaPlayer.pause()
-        playerState = STATE_PAUSED
+        playerState = PAUSED
         _playerViewModelState.onNext(PlayerUiState.Paused(getPlayerProgress()))
         stopProgressChecking()
     }
@@ -102,12 +109,12 @@ class PlayerViewModel(val track: Track) : ViewModel() {
 
     private fun setListeners() {
         mediaPlayer.setOnPreparedListener {
-            playerState = STATE_PREPARED
+            playerState = PREPARED
             _playerViewModelState.onNext(PlayerUiState.Prepared)
         }
 
         mediaPlayer.setOnCompletionListener {
-            playerState = STATE_PREPARED
+            playerState = PREPARED
             stopProgressChecking()
             _playerViewModelState.onNext(PlayerUiState.Prepared)
         }
@@ -131,10 +138,6 @@ class PlayerViewModel(val track: Track) : ViewModel() {
     }
 
     companion object {
-        private const val STATE_DEFAULT = 0
-        private const val STATE_PREPARED = 1
-        private const val STATE_PLAYING = 2
-        private const val STATE_PAUSED = 3
         fun getFactory(value: Track): ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 PlayerViewModel(value)

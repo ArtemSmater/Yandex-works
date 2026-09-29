@@ -1,5 +1,6 @@
 package com.example.playlistmaker.presentation.ui.search
 
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,7 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.SearchFragmentBinding
 import com.example.playlistmaker.di.Creator
 import com.example.playlistmaker.domain.entities.Track
@@ -219,6 +221,7 @@ class SearchFragment : Fragment() {
         when (state) {
             is SearchFragmentErrors.InternetConnection -> {
                 checkErrorState(state)
+                setErrorsRes(false)
             }
 
             is SearchFragmentErrors.HideSearchErrors -> {
@@ -227,6 +230,7 @@ class SearchFragment : Fragment() {
 
             is SearchFragmentErrors.EmptyResponse -> {
                 checkErrorState(state)
+                setErrorsRes(true)
             }
         }
     }
@@ -240,13 +244,37 @@ class SearchFragment : Fragment() {
         }
     }
 
+    private fun setErrorsRes(isEmpty: Boolean) {
+        with(binding) {
+            tvErrorMessage.text = getErrorMessage(isEmpty)
+            ivErrorPlaceholder.setImageDrawable(getErrorDrawable(isEmpty))
+        }
+    }
+
+
     private fun checkErrorState(state: SearchFragmentErrors) {
         with(binding) {
             tvErrorMessage.isVisible = state.tvVisible
             ivErrorPlaceholder.isVisible = state.ivVisible
             btnToUpload.isVisible = state.bnVisible
-            ivErrorPlaceholder.setImageDrawable(state.errorImg)
-            tvErrorMessage.text = state.errorMsg
+        }
+    }
+
+    private fun getErrorDrawable(isEmpty: Boolean): Drawable {
+        return if (isEmpty) {
+            requireActivity().theme.getDrawable(R.drawable.empty_light)
+        } else {
+            requireActivity().theme.getDrawable(R.drawable.error_light)
+        }
+    }
+
+    private fun getErrorMessage(isEmpty: Boolean): StringBuilder {
+        return if (isEmpty) {
+            StringBuilder(requireActivity().getString(R.string.empty_list))
+        } else {
+            StringBuilder(requireActivity().getString(R.string.internet_error))
+                .append(requireActivity().getString(R.string.spaces))
+                .append(requireActivity().getString(R.string.download_error))
         }
     }
 

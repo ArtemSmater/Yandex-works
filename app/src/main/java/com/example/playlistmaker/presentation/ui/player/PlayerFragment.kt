@@ -24,7 +24,10 @@ class PlayerFragment : Fragment() {
 
     private val args: PlayerFragmentArgs by navArgs()
     private val viewModel by lazy {
-        ViewModelProvider(this, PlayerViewModel.getFactory(args.Track))[PlayerViewModel::class.java]
+        ViewModelProvider(
+            this,
+            PlayerViewModel.getFactory(args.Track)
+        )[PlayerViewModel::class.java]
     }
     private val compositeDisposable = CompositeDisposable()
 
