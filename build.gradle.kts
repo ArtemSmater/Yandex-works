@@ -2,5 +2,5 @@
 plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.kotlin.android) apply false
-    id("com.android.legacy-kapt") version "9.2.1" apply false
+    id("com.android.legacy-kapt") version "9.4.1" apply false
 }

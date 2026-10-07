@@ -1,26 +1,26 @@
 package com.example.playlistmaker.presentation.ui.menu
 
 import androidx.lifecycle.ViewModel
-import io.reactivex.Observable
-import io.reactivex.subjects.PublishSubject
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 
 class MenuViewModel : ViewModel() {
 
-    private val _menuUiActions = PublishSubject.create<MenuUiActions>()
-    val menuUiActions: Observable<MenuUiActions> = _menuUiActions.hide()
+    private val _actions = MutableSharedFlow<MenuUiActions>(extraBufferCapacity = 1)
+    val actions = _actions.asSharedFlow()
 
     fun uiActions(action: MenuUiActions) {
         when (action) {
             is MenuUiActions.LaunchSearchFragment -> {
-                _menuUiActions.onNext(MenuUiActions.LaunchSearchFragment)
+                _actions.tryEmit(MenuUiActions.LaunchSearchFragment)
             }
 
             is MenuUiActions.LaunchMediaFragment -> {
-                _menuUiActions.onNext(MenuUiActions.LaunchMediaFragment)
+                _actions.tryEmit(MenuUiActions.LaunchMediaFragment)
             }
 
             is MenuUiActions.LaunchSettingsFragment -> {
-                _menuUiActions.onNext(MenuUiActions.LaunchSettingsFragment)
+                _actions.tryEmit(MenuUiActions.LaunchSettingsFragment)
             }
         }
     }

@@ -6,24 +6,23 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.playlistmaker.domain.usecases.GetThemeUseCase
 import com.example.playlistmaker.domain.usecases.UpdateThemeUseCase
-import io.reactivex.Observable
-import io.reactivex.subjects.BehaviorSubject
-import io.reactivex.subjects.PublishSubject
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 class SettingsViewModel(
     private val getThemeUseCase: GetThemeUseCase,
     private val updateThemeUseCase: UpdateThemeUseCase
 ) : ViewModel() {
 
-    private val _themeViewModel = BehaviorSubject.create<Boolean>()
-    val themeViewModel: Observable<Boolean> = _themeViewModel.hide()
+    private val _themeViewModel = MutableStateFlow(getThemeUseCase())
+    val themeViewModel = _themeViewModel.asStateFlow()
 
-    private var _settingsViewModelEffects = PublishSubject.create<SettingsUiEffects>()
-    val settingsViewModelEffects: Observable<SettingsUiEffects> = _settingsViewModelEffects.hide()
+    private var _settingsViewModelEffects =
+        MutableSharedFlow<SettingsUiEffects>(extraBufferCapacity = 1)
+    val settingsViewModelEffects = _settingsViewModelEffects.asSharedFlow()
 
-    init {
-        _themeViewModel.onNext(getThemeUseCase())
-    }
 
     fun uiAction(action: SettingsUiActions) {
         when (action) {
@@ -50,28 +49,31 @@ class SettingsViewModel(
     }
 
     private fun getShareAction() {
-        _settingsViewModelEffects.onNext(SettingsUiEffects.IntentShare)
+        _settingsViewModelEffects.tryEmit(SettingsUiEffects.IntentShare)
     }
 
     private fun getSupportAction() {
-        _settingsViewModelEffects.onNext(SettingsUiEffects.IntentSupport)
+        _settingsViewModelEffects.tryEmit(SettingsUiEffects.IntentSupport)
     }
 
     private fun getCheckAction() {
-        _settingsViewModelEffects.onNext(SettingsUiEffects.IntentAgreement)
+        _settingsViewModelEffects.tryEmit(SettingsUiEffects.IntentAgreement)
     }
 
     private fun getBackPressedAction() {
-        _settingsViewModelEffects.onNext(SettingsUiEffects.BackPressed)
+        _settingsViewModelEffects.tryEmit(SettingsUiEffects.BackPressed)
     }
 
     private fun updateTheme(isChecked: Boolean) {
         updateThemeUseCase(isChecked)
-        _themeViewModel.onNext(getThemeUseCase())
+        _themeViewModel.value = getThemeUseCase()
     }
 
     companion object {
-        fun getFactory(getThemeUseCase: GetThemeUseCase, updateThemeUseCase: UpdateThemeUseCase): ViewModelProvider.Factory =
+        fun getFactory(
+            getThemeUseCase: GetThemeUseCase,
+            updateThemeUseCase: UpdateThemeUseCase
+        ): ViewModelProvider.Factory =
             viewModelFactory {
                 initializer {
                     SettingsViewModel(getThemeUseCase, updateThemeUseCase)

@@ -3,13 +3,13 @@ plugins {
     alias(libs.plugins.kotlin.android)
     id("kotlin-kapt")
     id("kotlin-parcelize")
-    id ("androidx.navigation.safeargs.kotlin") version "2.9.6"
+    id ("androidx.navigation.safeargs.kotlin") version "2.10.2"
 }
 
 android {
     namespace = "com.example.playlistmaker"
     compileSdk {
-        version = release(36)
+        version = release(37)
     }
 
     defaultConfig {
@@ -47,18 +47,17 @@ android {
 
 dependencies {
 
-    implementation("androidx.navigation:navigation-fragment-ktx:2.9.6")
-    implementation("androidx.navigation:navigation-ui-ktx:2.9.6")
+    implementation (libs.dagger)
+    kapt (libs.dagger.compiler)
 
-    implementation("io.reactivex.rxjava2:rxandroid:2.1.1")
-    implementation("io.reactivex.rxjava2:rxjava:2.2.21")
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
 
-    implementation("com.squareup.retrofit2:retrofit:3.0.0")
-    implementation("com.squareup.retrofit2:adapter-rxjava2:3.0.0")
-    implementation("com.squareup.retrofit2:converter-gson:3.0.0")
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
 
-    annotationProcessor ("com.github.bumptech.glide:compiler:5.0.7")
-    implementation ("com.github.bumptech.glide:glide:5.0.7")
+    annotationProcessor (libs.compiler)
+    implementation (libs.glide)
 
     implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.core.ktx)
