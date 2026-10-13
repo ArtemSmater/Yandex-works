@@ -1,10 +1,7 @@
 package com.example.playlistmaker.presentation.ui.search
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.playlistmaker.domain.entities.Track
 import com.example.playlistmaker.domain.usecases.AddTrackToSearchHistoryUseCase
 import com.example.playlistmaker.domain.usecases.ClearHistoryUseCase
@@ -25,9 +22,11 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.launch
+import javax.inject.Inject
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Duration.Companion.milliseconds
 
-class SearchViewModel(
+class SearchViewModel @Inject constructor(
     private val getTrackListUseCase: GetTrackListUseCase,
     private val getHistoryListUseCase: GetHistoryListUseCase,
     private val addTrackToSearchHistoryUseCase: AddTrackToSearchHistoryUseCase,
@@ -152,7 +151,10 @@ class SearchViewModel(
         emit(SearchUiState.Loading)
         val tracks = getTrackListUseCase(query)
         emit(createSuccessState(tracks))
-    }.catch { emit(SearchUiState.Error(SearchFragmentErrors.InternetConnection())) }
+    }.catch {
+        if (it is CancellationException) throw it
+        emit(SearchUiState.Error(SearchFragmentErrors.InternetConnection()))
+    }
 
     private fun createSuccessState(tracks: List<Track>): SearchUiState {
         return if (tracks.isEmpty()) {
@@ -160,24 +162,5 @@ class SearchViewModel(
         } else {
             SearchUiState.WebTracks(tracks)
         }
-    }
-
-    companion object {
-        fun getFactory(
-            getTrackListUseCase: GetTrackListUseCase,
-            getHistoryListUseCase: GetHistoryListUseCase,
-            addTrackToSearchHistoryUseCase: AddTrackToSearchHistoryUseCase,
-            clearHistoryUseCase: ClearHistoryUseCase
-        ): ViewModelProvider.Factory =
-            viewModelFactory {
-                initializer {
-                    SearchViewModel(
-                        getTrackListUseCase,
-                        getHistoryListUseCase,
-                        addTrackToSearchHistoryUseCase,
-                        clearHistoryUseCase
-                    )
-                }
-            }
     }
 }

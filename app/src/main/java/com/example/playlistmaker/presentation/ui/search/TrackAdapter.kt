@@ -13,7 +13,8 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.TrackViewBinding
 import com.example.playlistmaker.domain.entities.Track
 import com.example.playlistmaker.presentation.utils.TrackDiffCallback
-import com.example.playlistmaker.presentation.utils.Transform
+import com.example.playlistmaker.presentation.utils.dpToPx
+import com.example.playlistmaker.presentation.utils.millsToMins
 
 class TrackAdapter : ListAdapter<Track, TrackAdapter.TrackViewHolder>(TrackDiffCallback()) {
     var onTrackClickListener: ((Track) -> Unit)? = null
@@ -44,11 +45,11 @@ class TrackAdapter : ListAdapter<Track, TrackAdapter.TrackViewHolder>(TrackDiffC
             with(binding) {
                 tvTrackName.text = model.trackName
                 tvTrackAuthor.text = model.artistName
-                tvDuration.text = Transform.millsToMins(model.trackTimeMillis)
+                tvDuration.text = model.trackTimeMillis.millsToMins()
 
                 val multiTransformation = MultiTransformation(
                     CenterCrop(),
-                    RoundedCorners(Transform.dpToPx(2f, itemView.context))
+                    RoundedCorners(2f.dpToPx(itemView.context))
                 )
 
                 Glide.with(itemView)

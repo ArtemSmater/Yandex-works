@@ -1,17 +1,15 @@
 package com.example.playlistmaker.presentation.ui.settings
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.playlistmaker.domain.usecases.GetThemeUseCase
 import com.example.playlistmaker.domain.usecases.UpdateThemeUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import javax.inject.Inject
 
-class SettingsViewModel(
+class SettingsViewModel @Inject constructor(
     private val getThemeUseCase: GetThemeUseCase,
     private val updateThemeUseCase: UpdateThemeUseCase
 ) : ViewModel() {
@@ -67,17 +65,5 @@ class SettingsViewModel(
     private fun updateTheme(isChecked: Boolean) {
         updateThemeUseCase(isChecked)
         _themeViewModel.value = getThemeUseCase()
-    }
-
-    companion object {
-        fun getFactory(
-            getThemeUseCase: GetThemeUseCase,
-            updateThemeUseCase: UpdateThemeUseCase
-        ): ViewModelProvider.Factory =
-            viewModelFactory {
-                initializer {
-                    SettingsViewModel(getThemeUseCase, updateThemeUseCase)
-                }
-            }
     }
 }

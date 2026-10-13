@@ -3,8 +3,9 @@ package com.example.playlistmaker.presentation.ui.menu
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import javax.inject.Inject
 
-class MenuViewModel : ViewModel() {
+class MenuViewModel @Inject constructor() : ViewModel() {
 
     private val _actions = MutableSharedFlow<MenuUiActions>(extraBufferCapacity = 1)
     val actions = _actions.asSharedFlow()

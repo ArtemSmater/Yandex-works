@@ -1,17 +1,15 @@
 package com.example.playlistmaker.presentation.ui.player
 
 import android.media.MediaPlayer
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.playlistmaker.domain.entities.Track
 import com.example.playlistmaker.presentation.ui.player.PlayerStates.DEFAULT
 import com.example.playlistmaker.presentation.ui.player.PlayerStates.PAUSED
 import com.example.playlistmaker.presentation.ui.player.PlayerStates.PLAYING
 import com.example.playlistmaker.presentation.ui.player.PlayerStates.PREPARED
-import com.example.playlistmaker.presentation.utils.Transform
+import com.example.playlistmaker.presentation.utils.millsToMins
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -20,14 +18,16 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
 
-class PlayerViewModel(
-    private val track: Track
+class PlayerViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
+    private val mediaPlayer: MediaPlayer
 ) : ViewModel() {
 
-    private val mediaPlayer by lazy {
-        MediaPlayer()
+    private val track: Track = checkNotNull(savedStateHandle["track"]) {
+        "Track was not passed to PlayerViewModel"
     }
     private var playerState = DEFAULT
 
@@ -45,7 +45,6 @@ class PlayerViewModel(
     init {
         preparePlayer()
     }
-
 
     fun uiAction(action: PlayerUiAction) {
         when (action) {
@@ -136,21 +135,12 @@ class PlayerViewModel(
 
     private fun getPlayerProgress(): String {
         val progress = mediaPlayer.currentPosition
-        return Transform.millsToMins(progress.toLong())
+        return progress.toLong().millsToMins()
     }
 
 
     override fun onCleared() {
-        super.onCleared()
         stopProgressChecking()
         mediaPlayer.release()
-    }
-
-    companion object {
-        fun getFactory(value: Track): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                PlayerViewModel(value)
-            }
-        }
     }
 }
