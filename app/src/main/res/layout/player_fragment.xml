@@ -12,6 +12,8 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:theme="@style/Base.Secondary"
+        android:background="?attr/colorPrimary"
         tools:context=".presentation.fragments.PlayerFragment">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -133,7 +135,7 @@
             <TextView
                 android:id="@+id/tvDurationValue"
                 style="@style/PlayerRightTextStyle"
-                app:millsToSeconds="@{track}"
+                millsToSeconds="@{track}"
                 app:layout_constraintBottom_toBottomOf="@+id/tvPlayerDuration"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/tvPlayerDuration"
@@ -145,14 +147,14 @@
                 style="@style/PlayerLeftTextStyle"
                 android:layout_marginStart="0dp"
                 android:text="@string/album"
-                app:textVisibility="@{track.collectionName}"
+                textVisibility="@{track.collectionName}"
                 app:layout_constraintStart_toStartOf="@id/tvPlayerDuration"
                 app:layout_constraintTop_toBottomOf="@id/tvPlayerDuration"/>
 
             <TextView
                 android:id="@+id/tvAlbumValue"
                 style="@style/PlayerRightTextStyle"
-                app:collectionName="@{track.collectionName}"
+                nullableText="@{track.collectionName}"
                 android:layout_marginStart="8dp"
                 android:ellipsize="marquee"
                 android:focusable="true"
@@ -168,15 +170,15 @@
             <TextView
                 android:id="@+id/tvYear"
                 style="@style/PlayerLeftTextStyle"
-                app:textVisibility="@{track.releaseDate}"
                 android:text="@string/year"
+                textVisibility="@{track.releaseDate}"
                 app:layout_constraintTop_toBottomOf="@id/tvAlbum"
                 app:layout_constraintEnd_toStartOf="@id/tvYearValue"/>
 
             <TextView
                 android:id="@+id/tvYearValue"
                 style="@style/PlayerRightTextStyle"
-                app:trackYear="@{track.releaseDate}"
+                nullableText="@{track.releaseDate}"
                 app:layout_constraintBottom_toBottomOf="@+id/tvYear"
                 app:layout_constraintStart_toEndOf="@id/tvYear"
                 app:layout_constraintTop_toTopOf="@id/tvYear"
@@ -186,13 +188,14 @@
                 android:id="@+id/tvGenre"
                 style="@style/PlayerLeftTextStyle"
                 android:text="@string/genre"
+                textVisibility="@{track.primaryGenreName}"
                 app:layout_constraintTop_toBottomOf="@id/tvYear"
                 app:layout_constraintEnd_toStartOf="@id/tvGenreValue" />
 
             <TextView
                 android:id="@+id/tvGenreValue"
                 style="@style/PlayerRightTextStyle"
-                android:text="@{track.primaryGenreName}"
+                nullableText="@{track.primaryGenreName}"
                 app:layout_constraintBottom_toBottomOf="@+id/tvGenre"
                 app:layout_constraintStart_toEndOf="@id/tvGenre"
                 app:layout_constraintTop_toTopOf="@id/tvGenre"
@@ -202,13 +205,14 @@
                 android:id="@+id/tvCountry"
                 style="@style/PlayerLeftTextStyle"
                 android:text="@string/country"
+                textVisibility="@{track.country}"
                 app:layout_constraintTop_toBottomOf="@id/tvGenre"
                 app:layout_constraintEnd_toStartOf="@id/tvCountryValue"/>
 
             <TextView
                 android:id="@+id/tvCountryValue"
                 style="@style/PlayerRightTextStyle"
-                android:text="@{track.country}"
+                nullableText="@{track.country}"
                 app:layout_constraintBottom_toBottomOf="@+id/tvCountry"
                 app:layout_constraintStart_toEndOf="@id/tvCountry"
                 app:layout_constraintTop_toTopOf="@id/tvCountry"

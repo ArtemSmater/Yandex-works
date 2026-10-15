@@ -3,7 +3,6 @@ package com.example.playlistmaker.presentation.utils
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.view.isVisible
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.MultiTransformation
@@ -17,11 +16,11 @@ import com.example.playlistmaker.domain.entities.Track
 fun bindTrackPoster(imageView: ImageView, track: Track) {
     val multiTransformation = MultiTransformation(
         CenterCrop(),
-        RoundedCorners(Transform.dpToPx(8f, imageView.context))
+        RoundedCorners(8f.dpToPx(imageView.context))
     )
 
     Glide.with(imageView)
-        .load(Transform.getHighQualityLink(track.artworkUrl100))
+        .load(track.artworkUrl100)
         .apply(RequestOptions.bitmapTransform(multiTransformation))
         .placeholder(R.drawable.placeholder)
         .into(imageView)
@@ -29,12 +28,12 @@ fun bindTrackPoster(imageView: ImageView, track: Track) {
 
 @BindingAdapter("millsToSeconds")
 fun bindSeconds(textView: TextView, track: Track) {
-    textView.text = Transform.millsToMins(track.trackTimeMillis)
+    textView.text = track.trackTimeMillis.millsToMins()
 }
 
-@BindingAdapter("collectionName")
-fun bindCollectionName(textView: TextView, text: String?) {
-    if (text == null) {
+@BindingAdapter("nullableText")
+fun bindNullableText(textView: TextView, text: String) {
+    if (text.isEmpty()) {
         textView.visibility = View.GONE
     } else {
         textView.text = text
@@ -42,15 +41,10 @@ fun bindCollectionName(textView: TextView, text: String?) {
 }
 
 @BindingAdapter("textVisibility")
-fun setVisibility(textView: TextView, text: String?) {
-    textView.isVisible = text != null
-}
-
-@BindingAdapter("trackYear")
-fun bindTrackYear(textView: TextView, date: String?) {
-    if (date == null) {
+fun setVisibility(textView: TextView, text: String) {
+    if (text.isEmpty()) {
         textView.visibility = View.GONE
     } else {
-        textView.text = Transform.getYear(date)
+        textView.visibility = View.VISIBLE
     }
 }

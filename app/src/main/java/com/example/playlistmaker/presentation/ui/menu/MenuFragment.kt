@@ -1,5 +1,7 @@
 package com.example.playlistmaker.presentation.ui.menu
 
+import android.content.Context
+import com.example.playlistmaker.presentation.viewmodelutils.ViewModelFactory
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,23 +10,38 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import com.example.playlistmaker.App
 import com.example.playlistmaker.databinding.MenuFragmentBinding
 import com.example.playlistmaker.presentation.utils.configureSystemBars
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
 
 class MenuFragment : Fragment() {
 
-    private var disposable: Disposable? = null
-    private val viewModel by lazy {
-        ViewModelProvider(this)[MenuViewModel::class.java]
+    private val component by lazy {
+        (requireActivity().application as App).appComponent
+    }
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelFactory
+    private val viewModel: MenuViewModel by viewModels {
+        viewModelFactory
     }
 
     private var _binding: MenuFragmentBinding? = null
     private val binding: MenuFragmentBinding
         get() = _binding ?: throw RuntimeException("Menu fragment binding is null")
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        component.inject(this)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,7 +68,6 @@ class MenuFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        disposable?.dispose()
         _binding = null
     }
 
@@ -64,9 +80,13 @@ class MenuFragment : Fragment() {
     }
 
     private fun observeChanges() {
-        disposable = viewModel.menuUiActions
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { render(it) }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.actions.collect { render(it) }
+                }
+            }
+        }
     }
 
 

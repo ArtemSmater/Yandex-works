@@ -1,5 +1,7 @@
 package com.example.playlistmaker.presentation.ui.settings
 
+import android.content.Context
+import com.example.playlistmaker.presentation.viewmodelutils.ViewModelFactory
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,31 +10,41 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import com.example.playlistmaker.App
 import com.example.playlistmaker.databinding.SettingsFragmentBinding
-import com.example.playlistmaker.di.Creator
 import com.example.playlistmaker.presentation.utils.FragmentTheme
 import com.example.playlistmaker.presentation.utils.IntentFactory
 import com.example.playlistmaker.presentation.utils.checkTheme
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
 
 class SettingsFragment : Fragment() {
 
-    private val viewModel by lazy {
-        ViewModelProvider(
-            this,
-            SettingsViewModel.getFactory(
-                Creator.getThemeUseCase,
-                Creator.getUpdateThemeUseCase)
-        )[SettingsViewModel::class.java]
+    private val component by lazy {
+        (requireActivity().application as App).appComponent
     }
-    private val compositeDisposable = CompositeDisposable()
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelFactory
+
+    private val viewModel: SettingsViewModel by viewModels {
+        viewModelFactory
+    }
 
     private var _binding: SettingsFragmentBinding? = null
     private val binding: SettingsFragmentBinding
         get() = _binding ?: throw RuntimeException("Settings fragment binding is null!")
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        component.inject(this)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -57,20 +69,21 @@ class SettingsFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        compositeDisposable.clear()
         _binding = null
     }
 
     private fun observeEffects() {
-        viewModel.themeViewModel
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { binding.switchTheme.isChecked = it }
-            .let(compositeDisposable::add)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.themeViewModel.collect { binding.switchTheme.isChecked = it }
+                }
 
-        viewModel.settingsViewModelEffects
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { checkEffects(it) }
-            .let(compositeDisposable::add)
+                launch {
+                    viewModel.settingsViewModelEffects.collect { checkEffects(it) }
+                }
+            }
+        }
     }
 
     private fun checkEffects(effect: SettingsUiEffects) {

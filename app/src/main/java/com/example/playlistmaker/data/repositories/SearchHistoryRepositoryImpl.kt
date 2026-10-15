@@ -8,8 +8,9 @@ import com.example.playlistmaker.domain.entities.Track
 import com.example.playlistmaker.domain.repository.SearchHistoryRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class SearchHistoryRepositoryImpl(
+class SearchHistoryRepositoryImpl @Inject constructor(
     private val storage: StorageClient<List<TrackEntity>>
 ) : SearchHistoryRepository {
     override suspend fun saveToHistory(track: Track) {

@@ -1,5 +1,6 @@
 package com.example.playlistmaker.presentation.ui.search
 
+import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,26 +13,31 @@ import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import com.example.playlistmaker.App
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.SearchFragmentBinding
-import com.example.playlistmaker.di.Creator
 import com.example.playlistmaker.domain.entities.Track
 import com.example.playlistmaker.presentation.utils.FragmentTheme
-import com.example.playlistmaker.presentation.utils.Transform
 import com.example.playlistmaker.presentation.utils.checkTheme
+import com.example.playlistmaker.presentation.utils.dpToPx
 import com.example.playlistmaker.presentation.utils.hideKeyboard
 import com.example.playlistmaker.presentation.utils.moveGuideline
+import com.example.playlistmaker.presentation.viewmodelutils.ViewModelFactory
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 import kotlin.math.max
 
 class SearchFragment : Fragment() {
 
-    // adapters
+    private val component by lazy {
+        (requireActivity().application as App).appComponent
+    }
+
     private val trackAdapter by lazy {
         TrackAdapter()
     }
@@ -40,21 +46,22 @@ class SearchFragment : Fragment() {
         TrackAdapter()
     }
 
-    private val viewModel by lazy {
-        ViewModelProvider(
-            this, SearchViewModel.getFactory(
-                Creator.getTrackListUseCase,
-                Creator.getHistoryListUseCase,
-                Creator.addTrackToSearchHistoryUseCase,
-                Creator.clearHistoryUseCase
-            )
-        )[SearchViewModel::class.java]
+    @Inject
+    lateinit var viewModelFactory: ViewModelFactory
+
+    private val viewModel: SearchViewModel by viewModels {
+        viewModelFactory
     }
 
     // view binding
     private var _binding: SearchFragmentBinding? = null
     private val binding: SearchFragmentBinding
         get() = _binding ?: throw RuntimeException("Search fragment binding is null!")
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        component.inject(this)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -71,8 +78,8 @@ class SearchFragment : Fragment() {
             val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             val imeHeight = insets.getInsets(WindowInsetsCompat.Type.ime())
             val maxValue = max(
-                Transform.dpToPx(bars.bottom.toFloat(), requireActivity()),
-                Transform.dpToPx(210f, requireActivity()) - imeHeight.bottom
+                bars.bottom.toFloat().dpToPx(requireActivity()),
+                210f.dpToPx(requireActivity()) - imeHeight.bottom
             )
             moveGuideline(maxValue, v)
             v.updatePadding(top = bars.top, bottom = max(bars.bottom, imeHeight.bottom))

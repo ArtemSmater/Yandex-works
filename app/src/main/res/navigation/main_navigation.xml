@@ -54,7 +54,7 @@
         android:name="com.example.playlistmaker.presentation.ui.player.PlayerFragment"
         android:label="PlayerFragment" >
         <argument
-            android:name="Track"
+            android:name="track"
             app:argType="com.example.playlistmaker.domain.entities.Track" />
     </fragment>
 </navigation>
