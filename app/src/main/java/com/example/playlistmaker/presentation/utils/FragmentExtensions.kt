@@ -32,10 +32,10 @@ fun Fragment.isNightMode(): Boolean {
 }
 
 fun EditText.hideKeyboard(activity: Activity) {
-    val inputMethodManager = activity
-        .getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
-    inputMethodManager
-        ?.hideSoftInputFromWindow(this.windowToken, 0)
+    val inputMethodManager = activity.getSystemService(
+        INPUT_METHOD_SERVICE
+    ) as? InputMethodManager
+    inputMethodManager?.hideSoftInputFromWindow(this.windowToken, 0)
 }
 
 fun moveGuideline(offset: Int, view: View) {

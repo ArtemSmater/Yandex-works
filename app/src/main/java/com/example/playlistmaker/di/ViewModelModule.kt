@@ -1,6 +1,10 @@
 package com.example.playlistmaker.di
 
 import com.example.playlistmaker.di.annotations.ViewModelKey
+import com.example.playlistmaker.presentation.ui.media.fragments.favourite.FavouriteViewModel
+import com.example.playlistmaker.presentation.ui.media.fragments.favourite.FavouriteViewModelCreator
+import com.example.playlistmaker.presentation.ui.media.fragments.playlist.PlaylistViewModel
+import com.example.playlistmaker.presentation.ui.media.fragments.playlist.PlaylistViewModelCreator
 import com.example.playlistmaker.presentation.ui.menu.MenuViewModel
 import com.example.playlistmaker.presentation.ui.menu.MenuViewModelCreator
 import com.example.playlistmaker.presentation.ui.player.PlayerViewModel
@@ -36,4 +40,14 @@ interface ViewModelModule {
     @IntoMap
     @ViewModelKey(SettingsViewModel::class)
     fun bindSettingsViewModelCreator(creator: SettingsViewModelCreator): ViewModelCreator
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(FavouriteViewModel::class)
+    fun bindFavouriteViewModelCreator(creator: FavouriteViewModelCreator): ViewModelCreator
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(PlaylistViewModel::class)
+    fun bindPlaylistViewModelCreator(creator: PlaylistViewModelCreator): ViewModelCreator
 }

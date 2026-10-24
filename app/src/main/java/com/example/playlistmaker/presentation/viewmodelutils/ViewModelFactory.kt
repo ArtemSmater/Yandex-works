@@ -15,9 +15,7 @@ class ViewModelFactory @Inject constructor(
         extras: CreationExtras
     ): T {
         val creator = creators[modelClass]
-            ?: throw IllegalArgumentException(
-                "Unknown ViewModel: ${modelClass.name}"
-            )
+            ?: throw IllegalArgumentException("Unknown ViewModel: ${modelClass.name}")
 
         @Suppress("UNCHECKED_CAST")
         return creator.create(extras) as T

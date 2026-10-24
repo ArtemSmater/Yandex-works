@@ -47,4 +47,13 @@
     <string name="genre">Genre</string>
     <string name="country">Country</string>
     <string name="time_example" translatable="false">0:30</string>
+
+    <!--titles-->
+    <string name="favourites_fragment">Favourite tracks</string>
+    <string name="playlists_fragment">Playlists</string>
+
+    <!--messages-->
+    <string name="empty_media">Your media is empty</string>
+    <string name="empty_playlist">You have not created any playlists</string>
+    <string name="create_playlist">Create playlist</string>
 </resources>
