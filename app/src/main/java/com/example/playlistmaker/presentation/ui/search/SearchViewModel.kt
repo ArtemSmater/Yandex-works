@@ -97,6 +97,7 @@ class SearchViewModel @Inject constructor(
             if (_searchViewModelState.value is SearchUiState.HistoryTracks) {
                 _searchViewModelState.value = SearchUiState.WebTracks(emptyList())
             }
+
             queryValue.value = charSequence.toString()
         }
     }
