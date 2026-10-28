@@ -36,10 +36,6 @@ class SettingsViewModel @Inject constructor(
                 getCheckAction()
             }
 
-            is SettingsUiActions.BackPressed -> {
-                getBackPressedAction()
-            }
-
             is SettingsUiActions.UpdateTheme -> {
                 updateTheme(action.isChecked)
             }
@@ -56,10 +52,6 @@ class SettingsViewModel @Inject constructor(
 
     private fun getCheckAction() {
         _settingsViewModelEffects.tryEmit(SettingsUiEffects.IntentAgreement)
-    }
-
-    private fun getBackPressedAction() {
-        _settingsViewModelEffects.tryEmit(SettingsUiEffects.BackPressed)
     }
 
     private fun updateTheme(isChecked: Boolean) {

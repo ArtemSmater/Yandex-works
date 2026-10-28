@@ -8,20 +8,7 @@
         android:layout_height="match_parent"
         android:background="?attr/colorPrimary"
         android:orientation="vertical"
-        android:theme="@style/Base.Secondary"
         tools:context=".presentation.ui.search.SearchFragment">
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/tbSearch"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:navigationIcon="@drawable/baseline_arrow_back_24"
-            app:title="@string/search"
-            app:titleTextAppearance="@style/YSMedium22_500"
-            app:titleTextColor="?attr/colorOnPrimary" />
 
         <LinearLayout
             android:id="@+id/llSearchContainer"
@@ -33,7 +20,7 @@
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tbSearch">
+            app:layout_constraintTop_toTopOf="parent">
 
             <EditText
                 android:id="@+id/etSearch"

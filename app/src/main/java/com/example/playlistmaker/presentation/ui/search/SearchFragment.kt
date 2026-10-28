@@ -7,10 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
-import androidx.core.view.updatePadding
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -22,15 +19,10 @@ import com.example.playlistmaker.App
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.SearchFragmentBinding
 import com.example.playlistmaker.domain.entities.Track
-import com.example.playlistmaker.presentation.utils.FragmentTheme
-import com.example.playlistmaker.presentation.utils.checkTheme
-import com.example.playlistmaker.presentation.utils.dpToPx
 import com.example.playlistmaker.presentation.utils.hideKeyboard
-import com.example.playlistmaker.presentation.utils.moveGuideline
 import com.example.playlistmaker.presentation.viewmodelutils.ViewModelFactory
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.math.max
 
 class SearchFragment : Fragment() {
 
@@ -74,19 +66,7 @@ class SearchFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
-            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            val imeHeight = insets.getInsets(WindowInsetsCompat.Type.ime())
-            val maxValue = max(
-                bars.bottom.toFloat().dpToPx(requireActivity()),
-                210f.dpToPx(requireActivity()) - imeHeight.bottom
-            )
-            moveGuideline(maxValue, v)
-            v.updatePadding(top = bars.top, bottom = max(bars.bottom, imeHeight.bottom))
-            insets
-        }
         setAdapters()
-        checkTheme(FragmentTheme(lightSB = false, darkSB = true, lightNB = false, darkNB = true))
         observeActions()
         observeChanges()
     }
@@ -149,19 +129,11 @@ class SearchFragment : Fragment() {
             cacheAdapter.onTrackClickListener = {
                 viewModel.uiAction(SearchUiAction.TrackClicked(it))
             }
-
-            tbSearch.setNavigationOnClickListener {
-                viewModel.uiAction(SearchUiAction.BackPressed)
-            }
         }
     }
 
     private fun checkScreenEffect(state: SearchUiEffect) {
         when (state) {
-            is SearchUiEffect.BackPressed -> {
-                findNavController().popBackStack()
-            }
-
             is SearchUiEffect.OpenPlayer -> {
                 findNavController().navigate(
                     SearchFragmentDirections.actionSearchFragmentToPlayerFragment(state.track)

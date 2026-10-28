@@ -4,16 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.MediaFragmentBinding
 import com.example.playlistmaker.presentation.ui.media.fragments.InnerFragments
-import com.example.playlistmaker.presentation.utils.FragmentTheme
-import com.example.playlistmaker.presentation.utils.checkTheme
 import com.google.android.material.tabs.TabLayoutMediator
 
 class MediaFragment : Fragment() {
@@ -33,14 +27,7 @@ class MediaFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
-            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            requireActivity().window.isNavigationBarContrastEnforced = false
-            v.updatePadding(top = bars.top, bottom = bars.bottom)
-            insets
-        }
         setViewPagerSettings()
-        checkTheme(FragmentTheme(lightSB = false, darkSB = true, lightNB = false, darkNB = true))
     }
 
     override fun onDestroyView() {
@@ -60,10 +47,6 @@ class MediaFragment : Fragment() {
                     }
                 )
             }.attach()
-
-            tbMedia.setNavigationOnClickListener {
-                findNavController().popBackStack()
-            }
         }
     }
 }
