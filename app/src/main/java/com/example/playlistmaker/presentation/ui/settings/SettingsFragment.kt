@@ -1,25 +1,19 @@
 package com.example.playlistmaker.presentation.ui.settings
 
 import android.content.Context
-import com.example.playlistmaker.presentation.viewmodelutils.ViewModelFactory
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.fragment.findNavController
 import com.example.playlistmaker.App
 import com.example.playlistmaker.databinding.SettingsFragmentBinding
-import com.example.playlistmaker.presentation.utils.FragmentTheme
 import com.example.playlistmaker.presentation.utils.IntentFactory
-import com.example.playlistmaker.presentation.utils.checkTheme
+import com.example.playlistmaker.presentation.viewmodelutils.ViewModelFactory
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -57,12 +51,6 @@ class SettingsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
-            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.updatePadding(top = bars.top, bottom = bars.bottom)
-            insets
-        }
-        checkTheme(FragmentTheme(lightSB = false, darkSB = true, lightNB = false, darkNB = true))
         observeEffects()
         observeActions()
     }
@@ -88,10 +76,6 @@ class SettingsFragment : Fragment() {
 
     private fun checkEffects(effect: SettingsUiEffects) {
         when (effect) {
-            is SettingsUiEffects.BackPressed -> {
-                doBackAction()
-            }
-
             is SettingsUiEffects.IntentShare -> {
                 doShareIntent()
             }
@@ -112,10 +96,6 @@ class SettingsFragment : Fragment() {
                 viewModel.uiAction(SettingsUiActions.UpdateTheme(checked))
             }
 
-            tbSettings.setNavigationOnClickListener {
-                viewModel.uiAction(SettingsUiActions.BackPressed)
-            }
-
             tvShare.setOnClickListener {
                 viewModel.uiAction(SettingsUiActions.ShareAction)
             }
@@ -128,10 +108,6 @@ class SettingsFragment : Fragment() {
                 viewModel.uiAction(SettingsUiActions.CheckAgreementAction)
             }
         }
-    }
-
-    private fun doBackAction() {
-        findNavController().popBackStack()
     }
 
     private fun doShareIntent() {

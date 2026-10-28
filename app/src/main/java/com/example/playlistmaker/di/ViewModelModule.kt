@@ -5,8 +5,6 @@ import com.example.playlistmaker.presentation.ui.media.fragments.favourite.Favou
 import com.example.playlistmaker.presentation.ui.media.fragments.favourite.FavouriteViewModelCreator
 import com.example.playlistmaker.presentation.ui.media.fragments.playlist.PlaylistViewModel
 import com.example.playlistmaker.presentation.ui.media.fragments.playlist.PlaylistViewModelCreator
-import com.example.playlistmaker.presentation.ui.menu.MenuViewModel
-import com.example.playlistmaker.presentation.ui.menu.MenuViewModelCreator
 import com.example.playlistmaker.presentation.ui.player.PlayerViewModel
 import com.example.playlistmaker.presentation.ui.player.PlayerViewModelCreator
 import com.example.playlistmaker.presentation.ui.search.SearchViewModel
@@ -20,11 +18,6 @@ import dagger.multibindings.IntoMap
 
 @Module
 interface ViewModelModule {
-
-    @Binds
-    @IntoMap
-    @ViewModelKey(MenuViewModel::class)
-    fun bindMenuViewModelCreator(creator: MenuViewModelCreator): ViewModelCreator
 
     @Binds
     @IntoMap

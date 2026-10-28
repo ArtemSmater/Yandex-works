@@ -32,7 +32,6 @@ class SearchViewModel @Inject constructor(
     private val addTrackToSearchHistoryUseCase: AddTrackToSearchHistoryUseCase,
     private val clearHistoryUseCase: ClearHistoryUseCase
 ) : ViewModel() {
-
     private lateinit var lastQuery: String
 
     // main observable query field
@@ -71,15 +70,7 @@ class SearchViewModel @Inject constructor(
             is SearchUiAction.FieldChanged -> {
                 fieldChanged(action.s, action.focused)
             }
-
-            is SearchUiAction.BackPressed -> {
-                backPressed()
-            }
         }
-    }
-
-    private fun backPressed() {
-        _searchViewModelEffect.tryEmit(SearchUiEffect.BackPressed)
     }
 
     private fun fieldChanged(charSequence: CharSequence?, isFocused: Boolean) {

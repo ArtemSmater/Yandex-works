@@ -15,13 +15,10 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.playlistmaker.App
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.PlayerFragmentBinding
-import com.example.playlistmaker.presentation.utils.FragmentTheme
-import com.example.playlistmaker.presentation.utils.checkTheme
 import com.example.playlistmaker.presentation.viewmodelutils.ViewModelFactory
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -62,13 +59,12 @@ class PlayerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
-            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val bars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
             v.updatePadding(top = bars.top, bottom = bars.bottom)
             insets
         }
         binding.track = args.track
         binding.lifecycleOwner = viewLifecycleOwner
-        checkTheme(FragmentTheme(lightSB = false, darkSB = true, lightNB = false, darkNB = true))
         observeActions()
         observeChanges()
     }
@@ -85,10 +81,6 @@ class PlayerFragment : Fragment() {
 
     private fun observeActions() {
         with(binding) {
-            tbPlayer.setNavigationOnClickListener {
-                viewModel.uiAction(PlayerUiAction.Back)
-            }
-
             ibStartSong.setOnClickListener {
                 viewModel.uiAction(PlayerUiAction.Play)
             }
@@ -101,12 +93,6 @@ class PlayerFragment : Fragment() {
                 launch {
                     viewModel.state.collect {
                         checkScreenState(it)
-                    }
-                }
-
-                launch {
-                    viewModel.effect.collect {
-                        findNavController().popBackStack()
                     }
                 }
             }

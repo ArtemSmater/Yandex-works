@@ -12,9 +12,7 @@ import com.example.playlistmaker.presentation.ui.player.PlayerStates.PREPARED
 import com.example.playlistmaker.presentation.utils.millsToMins
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -35,10 +33,6 @@ class PlayerViewModel @Inject constructor(
     private val _playerViewModelState = MutableStateFlow<PlayerUiState>(PlayerUiState.Initial)
     val state = _playerViewModelState.asStateFlow()
 
-    // for effects subscribers
-    private val _playerViewModelEffect = MutableSharedFlow<PlayerUiEffect>(extraBufferCapacity = 1)
-    val effect = _playerViewModelEffect.asSharedFlow()
-
     // progress subscriber object
     private var progressJob: Job? = null
 
@@ -50,10 +44,6 @@ class PlayerViewModel @Inject constructor(
         when (action) {
             is PlayerUiAction.Play -> {
                 playbackControl()
-            }
-
-            is PlayerUiAction.Back -> {
-                backPressed()
             }
 
             is PlayerUiAction.Pause -> {
@@ -110,10 +100,6 @@ class PlayerViewModel @Inject constructor(
         playerState = PAUSED
         _playerViewModelState.value = PlayerUiState.Paused(getPlayerProgress())
         stopProgressChecking()
-    }
-
-    private fun backPressed() {
-        _playerViewModelEffect.tryEmit(PlayerUiEffect.ClosePlayer)
     }
 
     private fun setListeners() {

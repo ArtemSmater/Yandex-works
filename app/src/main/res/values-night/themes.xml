@@ -17,7 +17,6 @@
     </style>
 
     <style name="Base.Secondary" parent="Base.Theme.PlaylistMaker">
-        <item name="colorPrimary">@color/black_light</item>
         <item name="android:statusBarColor">@color/black_light</item>
         <item name="android:windowLightStatusBar">false</item>
     </style>
