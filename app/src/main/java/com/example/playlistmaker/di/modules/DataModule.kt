@@ -1,4 +1,4 @@
-package com.example.playlistmaker.di
+package com.example.playlistmaker.di.modules
 
 import android.app.Application
 import com.example.playlistmaker.data.dto.local.TrackEntity

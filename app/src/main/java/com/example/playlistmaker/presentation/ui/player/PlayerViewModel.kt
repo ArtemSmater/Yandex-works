@@ -14,7 +14,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
@@ -29,12 +28,11 @@ class PlayerViewModel @Inject constructor(
     }
     private var playerState = DEFAULT
 
+    private var progressJob: Job? = null
+
     // for ui state subscribers
     private val _playerViewModelState = MutableStateFlow<PlayerUiState>(PlayerUiState.Initial)
     val state = _playerViewModelState.asStateFlow()
-
-    // progress subscriber object
-    private var progressJob: Job? = null
 
     init {
         preparePlayer()
@@ -66,18 +64,19 @@ class PlayerViewModel @Inject constructor(
 
     private fun startProgressChecking() {
         progressJob?.cancel()
-
         progressJob = viewModelScope.launch {
-            while (isActive) {
-                sendNewProgress(getPlayerProgress())
-                delay(300.milliseconds)
-            }
+            progressRunnable()
         }
     }
 
     private fun stopProgressChecking() {
         progressJob?.cancel()
-        progressJob = null
+    }
+
+    private suspend fun progressRunnable() {
+        delay(PLAYER_DELAY_VALUE.milliseconds)
+        sendNewProgress(getPlayerProgress())
+        return progressRunnable()
     }
 
     private fun playbackControl() {
@@ -128,5 +127,9 @@ class PlayerViewModel @Inject constructor(
     override fun onCleared() {
         stopProgressChecking()
         mediaPlayer.release()
+    }
+
+    companion object {
+        private const val PLAYER_DELAY_VALUE = 300L
     }
 }

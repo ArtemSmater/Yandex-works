@@ -2,6 +2,10 @@ package com.example.playlistmaker.di
 
 import android.app.Application
 import com.example.playlistmaker.di.annotations.ApplicationScope
+import com.example.playlistmaker.di.modules.DataModule
+import com.example.playlistmaker.di.modules.DomainModule
+import com.example.playlistmaker.di.modules.PresentationModule
+import com.example.playlistmaker.di.modules.ViewModelModule
 import com.example.playlistmaker.domain.usecases.GetThemeUseCase
 import com.example.playlistmaker.presentation.ui.media.fragments.favourite.FavouriteFragment
 import com.example.playlistmaker.presentation.ui.media.fragments.playlist.PlaylistFragment

@@ -32,13 +32,10 @@ class SearchViewModel @Inject constructor(
     private val addTrackToSearchHistoryUseCase: AddTrackToSearchHistoryUseCase,
     private val clearHistoryUseCase: ClearHistoryUseCase
 ) : ViewModel() {
-    private lateinit var lastQuery: String
+    private var lastQuery: String = EMPTY_STRING_VALUE
 
     // main observable query field
-    private val queryValue = MutableStateFlow("")
-
-    // double click security
-    private val trackClick = MutableSharedFlow<Track>(extraBufferCapacity = 1)
+    private val queryValue = MutableStateFlow(EMPTY_STRING_VALUE)
 
     // for ui state subscribers
     private val _searchViewModelState = MutableStateFlow<SearchUiState>(SearchUiState.Initial)
@@ -50,8 +47,8 @@ class SearchViewModel @Inject constructor(
 
     init {
         getTrackList()
-        getTrackClick()
     }
+
 
     fun uiAction(action: SearchUiAction) {
         when (action) {
@@ -89,29 +86,23 @@ class SearchViewModel @Inject constructor(
                 _searchViewModelState.value = SearchUiState.WebTracks(emptyList())
             }
 
-            queryValue.value = charSequence.toString()
+            queryValue.tryEmit(charSequence.toString())
         }
     }
 
     private fun trackClicked(track: Track) {
-        trackClick.tryEmit(track)
         viewModelScope.launch {
             addTrackToSearchHistoryUseCase(track)
-        }
-    }
-
-    @OptIn(FlowPreview::class)
-    private fun getTrackClick() {
-        viewModelScope.launch {
-            trackClick
-                .debounce(200.milliseconds)
-                .collect { _searchViewModelEffect.emit(SearchUiEffect.OpenPlayer(it)) }
+            _searchViewModelEffect.emit(SearchUiEffect.OpenPlayer(track))
         }
     }
 
     private fun retryQuery() {
         viewModelScope.launch {
-            createSearchFlow(lastQuery).collect { _searchViewModelState.value = it }
+            createSearchFlow(lastQuery)
+                .collect {
+                    _searchViewModelState.value = it
+                }
         }
     }
 
@@ -126,7 +117,7 @@ class SearchViewModel @Inject constructor(
     private fun getTrackList() {
         viewModelScope.launch {
             queryValue
-                .debounce(2000.milliseconds)
+                .debounce(SEARCH_DELAY_VALUE.milliseconds)
                 .map { it.trim() }
                 .distinctUntilChanged()
                 .flatMapLatest { createSearchFlow(it) }
@@ -154,5 +145,10 @@ class SearchViewModel @Inject constructor(
         } else {
             SearchUiState.WebTracks(tracks)
         }
+    }
+
+    companion object {
+        private const val SEARCH_DELAY_VALUE = 2000L
+        private const val EMPTY_STRING_VALUE = ""
     }
 }
