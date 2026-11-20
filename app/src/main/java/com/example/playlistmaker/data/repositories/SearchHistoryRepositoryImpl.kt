@@ -13,6 +13,7 @@ import javax.inject.Inject
 class SearchHistoryRepositoryImpl @Inject constructor(
     private val storage: StorageClient<List<TrackEntity>>
 ) : SearchHistoryRepository {
+
     override suspend fun saveToHistory(track: Track) {
         val currentHistory = getHistory().toMutableList()
         withContext(Dispatchers.IO) {

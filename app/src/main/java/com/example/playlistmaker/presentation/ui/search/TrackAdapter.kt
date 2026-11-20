@@ -16,8 +16,8 @@ import com.example.playlistmaker.presentation.utils.TrackDiffCallback
 import com.example.playlistmaker.presentation.utils.dpToPx
 import com.example.playlistmaker.presentation.utils.millsToMins
 
-class TrackAdapter : ListAdapter<Track, TrackAdapter.TrackViewHolder>(TrackDiffCallback()) {
-    var onTrackClickListener: ((Track) -> Unit)? = null
+class TrackAdapter(var onTrackClickListener: ((Track) -> Unit)) :
+    ListAdapter<Track, TrackAdapter.TrackViewHolder>(TrackDiffCallback()) {
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -34,7 +34,7 @@ class TrackAdapter : ListAdapter<Track, TrackAdapter.TrackViewHolder>(TrackDiffC
         val item = getItem(position)
         holder.bind(item)
         holder.itemView.setOnClickListener {
-            onTrackClickListener?.invoke(item)
+            onTrackClickListener.invoke(item)
         }
     }
 

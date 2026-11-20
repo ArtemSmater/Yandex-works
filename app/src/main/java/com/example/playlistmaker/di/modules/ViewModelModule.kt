@@ -1,4 +1,4 @@
-package com.example.playlistmaker.di
+package com.example.playlistmaker.di.modules
 
 import com.example.playlistmaker.di.annotations.ViewModelKey
 import com.example.playlistmaker.presentation.ui.media.fragments.favourite.FavouriteViewModel

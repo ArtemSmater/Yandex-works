@@ -1,4 +1,4 @@
-package com.example.playlistmaker.di
+package com.example.playlistmaker.di.modules
 
 import com.example.playlistmaker.data.repositories.LocalThemeRepositoryImpl
 import com.example.playlistmaker.data.repositories.RemoteTrackRepositoryImpl

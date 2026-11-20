@@ -21,21 +21,33 @@ import com.example.playlistmaker.databinding.SearchFragmentBinding
 import com.example.playlistmaker.domain.entities.Track
 import com.example.playlistmaker.presentation.utils.hideKeyboard
 import com.example.playlistmaker.presentation.viewmodelutils.ViewModelFactory
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 class SearchFragment : Fragment() {
+
+    private var isClickAllowed = true
 
     private val component by lazy {
         (requireActivity().application as App).appComponent
     }
 
     private val trackAdapter by lazy {
-        TrackAdapter()
+        TrackAdapter {
+            if (getClickPermission()) {
+                viewModel.uiAction(SearchUiAction.TrackClicked(it))
+            }
+        }
     }
 
     private val cacheAdapter by lazy {
-        TrackAdapter()
+        TrackAdapter {
+            if (getClickPermission()) {
+                viewModel.uiAction(SearchUiAction.TrackClicked(it))
+            }
+        }
     }
 
     @Inject
@@ -74,6 +86,18 @@ class SearchFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun getClickPermission(): Boolean {
+        val current = isClickAllowed
+        if (isClickAllowed) {
+            isClickAllowed = false
+            lifecycleScope.launch {
+                delay(CLICK_DELAY_VALUE.milliseconds)
+                isClickAllowed = true
+            }
+        }
+        return current
     }
 
     private fun observeChanges() {
@@ -120,14 +144,6 @@ class SearchFragment : Fragment() {
 
             ivClear.setOnClickListener {
                 viewModel.uiAction(SearchUiAction.FieldChanged(false, null))
-            }
-
-            trackAdapter.onTrackClickListener = {
-                viewModel.uiAction(SearchUiAction.TrackClicked(it))
-            }
-
-            cacheAdapter.onTrackClickListener = {
-                viewModel.uiAction(SearchUiAction.TrackClicked(it))
             }
         }
     }
@@ -271,5 +287,9 @@ class SearchFragment : Fragment() {
     private fun setAdapters() {
         binding.rvTracks.adapter = trackAdapter
         binding.rvTracksCache.adapter = cacheAdapter
+    }
+
+    companion object {
+        private const val CLICK_DELAY_VALUE = 1000L
     }
 }
