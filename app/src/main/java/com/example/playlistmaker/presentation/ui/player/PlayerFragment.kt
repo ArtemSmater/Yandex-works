@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -84,6 +85,10 @@ class PlayerFragment : Fragment() {
             ibStartSong.setOnClickListener {
                 viewModel.uiAction(PlayerUiAction.Play)
             }
+
+            ibAddToFavourite.setOnClickListener {
+                viewModel.uiAction(PlayerUiAction.ToggleFavourite)
+            }
         }
     }
 
@@ -95,6 +100,12 @@ class PlayerFragment : Fragment() {
                         checkScreenState(it)
                     }
                 }
+
+                launch {
+                    viewModel.favouriteObservable.collect {
+                        binding.ibAddToFavourite.setImageDrawable(getFavouriteDrawable(it))
+                    }
+                }
             }
         }
     }
@@ -102,42 +113,30 @@ class PlayerFragment : Fragment() {
     private fun checkScreenState(state: PlayerUiState) {
         when (state) {
             is PlayerUiState.Initial -> {
-                initialScreen()
+                renderScreen(state.isPlayEnabled, state.isPlaying, state.progress)
             }
 
             is PlayerUiState.Prepared -> {
-                preparedScreen()
+                renderScreen(state.isPlayEnabled, state.isPlaying, state.progress)
             }
 
             is PlayerUiState.Playing -> {
-                playingScreen(state.progress)
+                renderScreen(state.isPlayEnabled, state.isPlaying, state.progress)
             }
 
             is PlayerUiState.Paused -> {
-                pausedScreen(state.progress)
+                renderScreen(state.isPlayEnabled, state.isPlaying, state.progress)
+            }
+
+            is PlayerUiState.Error -> {
+                Toast.makeText(requireActivity(), state.progress, Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    private fun initialScreen() {
-        binding.ibStartSong.isEnabled = false
-    }
-
-    private fun preparedScreen() {
-        getActionScreen(requireActivity().getString(R.string.time_example), false)
-    }
-
-    private fun playingScreen(progress: String) {
-        getActionScreen(progress, isPlaying = true)
-    }
-
-    private fun pausedScreen(progress: String) {
-        getActionScreen(progress, isPlaying = false)
-    }
-
-    private fun getActionScreen(progress: String, isPlaying: Boolean) {
+    private fun renderScreen(isEnabled: Boolean, isPlaying: Boolean, progress: String) {
         with(binding) {
-            ibStartSong.isEnabled = true
+            ibStartSong.isEnabled = isEnabled
             ibStartSong.setImageDrawable(getPlayDrawable(isPlaying))
             tvSongDuration.text = progress
         }
@@ -148,6 +147,15 @@ class PlayerFragment : Fragment() {
             R.drawable.pause_button
         } else {
             R.drawable.play_button
+        }
+        return AppCompatResources.getDrawable(requireActivity(), drawableId)
+    }
+
+    private fun getFavouriteDrawable(isFavourite: Boolean): Drawable? {
+        val drawableId = if (isFavourite) {
+            R.drawable.favourite_button_enabled
+        } else {
+            R.drawable.favourite_button_disabled
         }
         return AppCompatResources.getDrawable(requireActivity(), drawableId)
     }

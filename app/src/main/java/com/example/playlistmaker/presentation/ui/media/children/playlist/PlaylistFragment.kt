@@ -1,4 +1,4 @@
-package com.example.playlistmaker.presentation.ui.media.fragments.playlist
+package com.example.playlistmaker.presentation.ui.media.children.playlist
 
 import android.content.Context
 import android.os.Bundle

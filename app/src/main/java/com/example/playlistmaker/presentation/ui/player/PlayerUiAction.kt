@@ -4,4 +4,5 @@ sealed interface PlayerUiAction {
 
     object Play : PlayerUiAction
     object Pause : PlayerUiAction
+    object ToggleFavourite: PlayerUiAction
 }

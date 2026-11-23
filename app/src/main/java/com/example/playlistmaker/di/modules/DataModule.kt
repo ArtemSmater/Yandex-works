@@ -1,9 +1,12 @@
 package com.example.playlistmaker.di.modules
 
 import android.app.Application
-import com.example.playlistmaker.data.dto.local.TrackEntity
-import com.example.playlistmaker.data.local.PrefsStorageClient
-import com.example.playlistmaker.data.local.StorageClient
+import androidx.room.Room
+import com.example.playlistmaker.data.local.cache.PrefsStorageClient
+import com.example.playlistmaker.data.local.cache.StorageClient
+import com.example.playlistmaker.data.local.database.AppDatabase
+import com.example.playlistmaker.data.local.database.dao.FavouritesDao
+import com.example.playlistmaker.data.local.database.tables.TrackEntity
 import com.example.playlistmaker.data.remote.NetworkClient
 import com.example.playlistmaker.data.remote.NetworkFactory
 import com.example.playlistmaker.di.annotations.ApplicationScope
@@ -16,6 +19,29 @@ import dagger.Provides
 interface DataModule {
 
     companion object {
+
+        private const val LOCAL_DATABASE_NAME = "playlist_maker_database.db"
+
+        @Provides
+        @ApplicationScope
+        fun provideLocalDatabase(
+            application: Application
+        ): AppDatabase {
+            return Room.databaseBuilder(
+                application,
+                AppDatabase::class.java,
+                LOCAL_DATABASE_NAME
+            ).build()
+        }
+
+        @Provides
+        @ApplicationScope
+        fun provideFavouritesDao(
+            database: AppDatabase
+        ): FavouritesDao {
+            return database.getFavouritesDao()
+        }
+
         @Provides
         @ApplicationScope
         fun provideGson(): Gson = Gson()

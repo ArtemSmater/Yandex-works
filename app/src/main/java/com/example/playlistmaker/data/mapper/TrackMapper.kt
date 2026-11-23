@@ -1,7 +1,7 @@
 package com.example.playlistmaker.data.mapper
 
-import com.example.playlistmaker.data.dto.local.TrackEntity
-import com.example.playlistmaker.data.dto.network.TrackDto
+import com.example.playlistmaker.data.local.database.tables.TrackEntity
+import com.example.playlistmaker.data.remote.dto.TrackDto
 import com.example.playlistmaker.domain.entities.Track
 
 

@@ -2,7 +2,7 @@ package com.example.playlistmaker.data.repositories
 
 import android.app.Application
 import com.example.playlistmaker.App
-import com.example.playlistmaker.data.local.StorageClient
+import com.example.playlistmaker.data.local.cache.StorageClient
 import com.example.playlistmaker.domain.repository.LocalThemeRepository
 import javax.inject.Inject
 

@@ -1,10 +1,10 @@
 package com.example.playlistmaker.di.modules
 
 import com.example.playlistmaker.di.annotations.ViewModelKey
-import com.example.playlistmaker.presentation.ui.media.fragments.favourite.FavouriteViewModel
-import com.example.playlistmaker.presentation.ui.media.fragments.favourite.FavouriteViewModelCreator
-import com.example.playlistmaker.presentation.ui.media.fragments.playlist.PlaylistViewModel
-import com.example.playlistmaker.presentation.ui.media.fragments.playlist.PlaylistViewModelCreator
+import com.example.playlistmaker.presentation.ui.media.children.favourite.FavouriteViewModel
+import com.example.playlistmaker.presentation.ui.media.children.favourite.FavouriteViewModelCreator
+import com.example.playlistmaker.presentation.ui.media.children.playlist.PlaylistViewModel
+import com.example.playlistmaker.presentation.ui.media.children.playlist.PlaylistViewModelCreator
 import com.example.playlistmaker.presentation.ui.player.PlayerViewModel
 import com.example.playlistmaker.presentation.ui.player.PlayerViewModelCreator
 import com.example.playlistmaker.presentation.ui.search.SearchViewModel
