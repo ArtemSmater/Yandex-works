@@ -1,4 +1,4 @@
-package com.example.playlistmaker.data.dto.network
+package com.example.playlistmaker.data.remote.dto
 
 data class TrackDto(
     val trackId: String?,

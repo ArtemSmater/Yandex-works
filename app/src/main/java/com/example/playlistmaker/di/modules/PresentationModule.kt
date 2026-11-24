@@ -9,6 +9,8 @@ interface PresentationModule {
 
     companion object {
         @Provides
-        fun provideMediaPlayer(): MediaPlayer = MediaPlayer()
+        fun provideMediaPlayerFactory(): () -> MediaPlayer = {
+            MediaPlayer()
+        }
     }
 }

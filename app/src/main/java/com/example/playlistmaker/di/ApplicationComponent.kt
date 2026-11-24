@@ -7,8 +7,8 @@ import com.example.playlistmaker.di.modules.DomainModule
 import com.example.playlistmaker.di.modules.PresentationModule
 import com.example.playlistmaker.di.modules.ViewModelModule
 import com.example.playlistmaker.domain.usecases.GetThemeUseCase
-import com.example.playlistmaker.presentation.ui.media.fragments.favourite.FavouriteFragment
-import com.example.playlistmaker.presentation.ui.media.fragments.playlist.PlaylistFragment
+import com.example.playlistmaker.presentation.ui.media.children.favourite.FavouriteFragment
+import com.example.playlistmaker.presentation.ui.media.children.playlist.PlaylistFragment
 import com.example.playlistmaker.presentation.ui.player.PlayerFragment
 import com.example.playlistmaker.presentation.ui.search.SearchFragment
 import com.example.playlistmaker.presentation.ui.settings.SettingsFragment

@@ -2,8 +2,9 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("kotlin-kapt")
+    id("com.google.devtools.ksp")
     id("kotlin-parcelize")
-    id ("androidx.navigation.safeargs.kotlin") version "2.10.2"
+    id("androidx.navigation.safeargs.kotlin")
 }
 
 android {
@@ -16,7 +17,7 @@ android {
     defaultConfig {
         applicationId = "com.example.playlistmaker"
         minSdk = 29
-        targetSdk = 36
+        this.targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
@@ -55,18 +56,28 @@ kotlin {
 
 dependencies {
 
-    implementation(libs.androidx.viewpager2)
-    implementation (libs.dagger)
-    kapt (libs.dagger.compiler)
+    // room library dependencies
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx)
 
+    // view pager2 dependency
+    implementation(libs.androidx.viewpager2)
+
+    // dagger 2 dependency inversion library
+    implementation(libs.dagger)
+    ksp(libs.dagger.compiler)
+
+    // fragment jetpack navigation library
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
 
+    // retrofit dependency
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
 
-    annotationProcessor (libs.compiler)
-    implementation (libs.glide)
+    // glide graphyc library
+    implementation(libs.glide)
 
     implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.core.ktx)

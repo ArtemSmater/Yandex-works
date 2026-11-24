@@ -1,6 +1,11 @@
-package com.example.playlistmaker.data.dto.local
+package com.example.playlistmaker.data.local.database.tables
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity("saved_tracks")
 data class TrackEntity(
+    @PrimaryKey
     val trackId: String,
     val previewUrl: String,
     val trackName: String,

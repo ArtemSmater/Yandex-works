@@ -1,6 +1,6 @@
 package com.example.playlistmaker.data.remote
 
-import com.example.playlistmaker.data.dto.network.TrackRequest
+import com.example.playlistmaker.data.remote.dto.TrackRequest
 import retrofit2.http.GET
 import retrofit2.http.Query
 

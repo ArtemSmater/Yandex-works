@@ -290,6 +290,6 @@ class SearchFragment : Fragment() {
     }
 
     companion object {
-        private const val CLICK_DELAY_VALUE = 1000L
+        const val CLICK_DELAY_VALUE = 1000L
     }
 }
