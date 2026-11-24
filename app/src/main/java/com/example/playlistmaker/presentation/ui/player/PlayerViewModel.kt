@@ -6,6 +6,7 @@ import android.os.HandlerThread
 import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.domain.entities.Track
 import com.example.playlistmaker.domain.usecases.CheckFavouriteTrackUseCase
 import com.example.playlistmaker.domain.usecases.ToggleFavouriteUseCase
@@ -52,6 +53,7 @@ class PlayerViewModel @Inject constructor(
     private var playerState = DEFAULT
 
     private var progressJob: Job? = null
+    private var playerControlJob: Job? = null
 
     // for ui state subscribers
     val favouriteObservable = checkFavouriteTrackUseCase(track.trackId)
@@ -66,17 +68,20 @@ class PlayerViewModel @Inject constructor(
     }
 
     fun uiAction(action: PlayerUiAction) {
-        coroutineScope.launch {
-            when (action) {
-                is PlayerUiAction.Play -> {
-                    playbackControl()
+        when (action) {
+            is PlayerUiAction.Play,
+            is PlayerUiAction.Pause -> {
+                playerControlJob?.cancel()
+                playerControlJob = coroutineScope.launch {
+                    when (action) {
+                        is PlayerUiAction.Play -> playbackControl()
+                        is PlayerUiAction.Pause -> checkPlaying()
+                    }
                 }
+            }
 
-                is PlayerUiAction.Pause -> {
-                    checkPlaying()
-                }
-
-                is PlayerUiAction.ToggleFavourite -> {
+            is PlayerUiAction.ToggleFavourite -> {
+                viewModelScope.launch {
                     toggleFavouriteUseCase(track)
                 }
             }
@@ -120,21 +125,19 @@ class PlayerViewModel @Inject constructor(
     }
 
     private fun play() {
-        coroutineScope.launch {
-            mediaPlayer.start()
-            playerState = PLAYING
-            _playerViewModelState.value = PlayerUiState.Playing(getPlayerProgress())
-            startProgressChecking()
-        }
+        mediaPlayer.start()
+        playerState = PLAYING
+        _playerViewModelState.value = PlayerUiState.Playing(getPlayerProgress())
+        startProgressChecking()
+
     }
 
     private fun pause() {
-        coroutineScope.launch {
-            mediaPlayer.pause()
-            playerState = PAUSED
-            _playerViewModelState.value = PlayerUiState.Paused(getPlayerProgress())
-            stopProgressChecking()
-        }
+        mediaPlayer.pause()
+        playerState = PAUSED
+        _playerViewModelState.value = PlayerUiState.Paused(getPlayerProgress())
+        stopProgressChecking()
+
     }
 
     private fun setListeners() {
@@ -182,8 +185,10 @@ class PlayerViewModel @Inject constructor(
         coroutineScope.cancel()
         playerHandler.post {
             try {
-                releasePlayer()
-                playerState = DEFAULT
+                if (::mediaPlayer.isInitialized) {
+                    releasePlayer()
+                    playerState = DEFAULT
+                }
             } finally {
                 playerThread.quitSafely()
             }
